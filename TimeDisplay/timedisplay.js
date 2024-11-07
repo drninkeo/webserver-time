@@ -1,18 +1,18 @@
 (() => {
 
-////////////////////////////////////////////////////////////
-///                                                      ///
-///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V1.0)      ///
-///                                                      ///
-///  by Highpoint                last update: 07.11.24   ///
-///                                                      ///
-///  https://github.com/Highpoint2000/webserver-time     ///
-///                                                      ///
-////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    ///                                                      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V1.0a)     ///
+    ///                                                      ///
+    ///  by Highpoint                last update: 07.11.24   ///
+    ///                                                      ///
+    ///  https://github.com/Highpoint2000/webserver-time     ///
+    ///                                                      ///
+    ////////////////////////////////////////////////////////////
 
     const showTimeOnPhone = true; // Set to true to enable display on mobile, false to hide it
-	
-////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////
 
     const plugin_version = '1.0'; // Plugin Version
     const phoneDisplayClass = showTimeOnPhone ? 'show-phone' : 'hide-phone';
@@ -29,12 +29,28 @@
     // Fix the width of rt-container
     const rtContainer = document.getElementById("rt-container");
     if (rtContainer) {
-        rtContainer.style.setProperty('width', '515px', 'important');
+        rtContainer.style.setProperty('width', '450px', 'important');
         rtContainer.style.flex = 'none'; // Prevent flex growth or shrinking
     } else {
         console.error("rt-container not found.");
         return; // Exit if the container does not exist
     }
+
+    // Add CSS styles for the data elements
+    const style = document.createElement('style');
+style.innerHTML = `
+#data-rt0, #data-rt1 {
+    width: calc(92%); /* Volle Breite minus den Abstand */
+    height: 20px; /* Feste Höhe */
+	margin-left: 20px;
+    overflow: hidden; /* Verhindert, dass der Inhalt überläuft */
+    white-space: nowrap; /* Verhindert Umbrüche im Text */
+    line-height: 20px; /* Zentriert den Text vertikal innerhalb der Höhe */
+}
+
+`;
+
+    document.head.appendChild(style);
 
     // Function to format the current local time as HH:MM:SS
     const getCurrentTime = () => {
@@ -48,26 +64,32 @@
         return now.toUTCString().split(' ')[4]; // Extracts HH:MM:SS part
     };
 
-    // Define the HTML code for the double time display
-    const DoubleTimeContainerHtml = () => 
-        '<div id="time-content">' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 3px; font-size: 17px;" id="utc-label">UTC</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 24px;" id="current-utc-time">' + getCurrentUTCTime() + '</div>' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: -3px; font-size: 17px;" id="local-label">LOCAL</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 24px;" id="current-time">' + getCurrentTime() + '</div>' +
-        '</div>';
+// Define the HTML code for the double time display
+const DoubleTimeContainerHtml = () => 
+    '<div id="time-content" style="text-align: right;">' +
+    '    <div style="margin-bottom: 10px; display: flex; justify-content: right; align-items: center;">' +  // Container for UTC with label inline
+    '        <h2 class="' + phoneDisplayClass + '" style="margin: 2.5px 10px 0 0; font-size: 23px;" id="utc-label">UTC</h2>' +
+    '        <div class="' + phoneDisplayClass + ' text-small" style="font-size: 32px; margin: 5px 0 0 0;" id="current-utc-time">' + getCurrentUTCTime() + '</div>' +
+    '    </div>' +
+    '    <div style="display: flex; justify-content: center; align-items: right;">' +  // Container for Local time with label inline
+    '        <h2 class="' + phoneDisplayClass + '" style="margin: -15px 10px 0 0; font-size: 23x;" id="local-label">LOC</h2>' +
+    '        <div class="' + phoneDisplayClass + ' text-small" style="font-size: 32px; margin: -20px 0 0 0;" id="current-time">' + getCurrentTime() + '</div>' +
+    '    </div>' +
+    '</div>';
+
+
 
     // Define the HTML code for the single time display
     const SingleTimeContainerHtml = (timeLabel, timeValue) =>
         '<div id="time-content">' +
         '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 5px; font-size: 23px;" id="single-label" class="mb-0">' + timeLabel + '</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: 0px; font-size: 32px;" id="current-single-time">' + timeValue + '</div>' +
+        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: 0px; font-size: 36px;" id="current-single-time">' + timeValue + '</div>' +
         '</div>';
 
     // Create a persistent container for toggling time displays
     const container = document.createElement("div");
     container.className = "panel-33";
-    container.style.width = "160px";
+    container.style.width = "230px";
     container.style.height = "auto";
     container.style.display = "flex";
     container.style.alignItems = "center";
