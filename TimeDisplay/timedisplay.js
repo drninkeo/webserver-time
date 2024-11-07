@@ -51,17 +51,17 @@
     // Define the HTML code for the double time display
     const DoubleTimeContainerHtml = () => 
         '<div id="time-content">' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 3px; font-size: 15px;" id="utc-label">UTC</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 25px;" id="current-utc-time">' + getCurrentUTCTime() + '</div>' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: -3px; font-size: 15px;" id="local-label">LOCAL TIME</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 25px;" id="current-time">' + getCurrentTime() + '</div>' +
+        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 3px; font-size: 17px;" id="utc-label">UTC</h2>' +
+        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 24px;" id="current-utc-time">' + getCurrentUTCTime() + '</div>' +
+        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: -3px; font-size: 17px;" id="local-label">LOCAL</h2>' +
+        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: -12px; font-size: 24px;" id="current-time">' + getCurrentTime() + '</div>' +
         '</div>';
 
     // Define the HTML code for the single time display
     const SingleTimeContainerHtml = (timeLabel, timeValue) =>
         '<div id="time-content">' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 5px; font-size: 20px;" id="single-label" class="mb-0">' + timeLabel + '</h2>' +
-        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: 0px; font-size: 35px;" id="current-single-time">' + timeValue + '</div>' +
+        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: 5px; font-size: 23px;" id="single-label" class="mb-0">' + timeLabel + '</h2>' +
+        '    <div class="' + phoneDisplayClass + ' text-small" style="margin-top: 0px; font-size: 32px;" id="current-single-time">' + timeValue + '</div>' +
         '</div>';
 
     // Create a persistent container for toggling time displays
@@ -82,7 +82,7 @@
         if (displayState === 0) {
             container.innerHTML = DoubleTimeContainerHtml();
         } else if (displayState === 1) {
-            container.innerHTML = SingleTimeContainerHtml("LOCAL TIME", getCurrentTime());
+            container.innerHTML = SingleTimeContainerHtml("LOCAL", getCurrentTime());
         } else {
             container.innerHTML = SingleTimeContainerHtml("UTC", getCurrentUTCTime());
         }
@@ -118,7 +118,7 @@
                 container.innerHTML = DoubleTimeContainerHtml();
                 break;
             case 1: // Local only
-                container.innerHTML = SingleTimeContainerHtml("LOCAL TIME", getCurrentTime());
+                container.innerHTML = SingleTimeContainerHtml("LOCAL", getCurrentTime());
                 break;
             case 2: // UTC only
                 container.innerHTML = SingleTimeContainerHtml("UTC", getCurrentUTCTime());
