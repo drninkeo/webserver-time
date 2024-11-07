@@ -30,7 +30,9 @@ The following variables can be changed in the header of the screenshot.js:
 
 - A switch in the header of the script can be used to toggle the time display on mobile devices on and off
 - Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
-![image](https://github.com/user-attachments/assets/bfcc70ed-2d5d-4ddc-bc0a-de1c07c9bae5)![image](https://github.com/user-attachments/assets/39a6c1ed-251c-4686-9ddc-7e34a7da7293)
+
+![image](https://github.com/user-attachments/assets/bfcc70ed-2d5d-4ddc-bc0a-de1c07c9bae5)
+![image](https://github.com/user-attachments/assets/39a6c1ed-251c-4686-9ddc-7e34a7da7293)
 
 ## History:
 
