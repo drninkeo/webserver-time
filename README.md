@@ -1,4 +1,4 @@
-# Screenshot Plugin for [FM-DX-Webserver](https://github.com/NoobishSVK/fm-dx-webserver)
+# Time Display Plugin for [FM-DX-Webserver](https://github.com/NoobishSVK/fm-dx-webserver)
 
 This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
