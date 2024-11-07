@@ -2,7 +2,8 @@
 
 This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
-![image](https://github.com/user-attachments/assets/dda3ddd0-5858-4b89-8a41-5c142fc7556a)
+![image](https://github.com/user-attachments/assets/85d8fb3b-d657-4376-9e06-2168bcff9206)
+
 
 
 ## Version 1.0a
