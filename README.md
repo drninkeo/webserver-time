@@ -26,7 +26,7 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 The following variables can be changed in the header of the screenshot.js:
 
-    showTimeOnPhone = true; // Set to true to enable display on mobile, false to hide it 
+    showTimeOnPhone = true;     // Set to true to enable display on mobile, false to hide it 
     VerticalCorrection = '0'; 	// Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
     HorizontalCorrection = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
 
