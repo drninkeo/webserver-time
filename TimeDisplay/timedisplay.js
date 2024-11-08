@@ -2,7 +2,7 @@
 
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.0)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.0a)     ///
     ///                                                      ///
     ///  by Highpoint                last update: 08.11.24   ///
     ///                                                      ///
@@ -10,22 +10,23 @@
     ///                                                      ///
     ////////////////////////////////////////////////////////////
 
-    const showTimeOnPhone = true; 		// Set to true to display on mobile, false to hide it
-    const VerticalCorrection = '0'; 	// Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
-    const HorizontalCorrection = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
+    const showTimeOnPhone = true; 				// Set to true to display on mobile, false to hide it
+    const VerticalCorrectionPosition = '0'; 	// Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
+    const HorizontalCorrectionPosition = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
+    const initialDisplayState = 0; 				// Set to 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
 
     ////////////////////////////////////////////////////////////
 
     const plugin_version = '1.0'; // Plugin Version
     const phoneDisplayClass = showTimeOnPhone ? 'show-phone' : 'hide-phone';
 
-    // Function to retrieve the saved display state
+    // Function to retrieve the saved display state or use the initial setting
     const getStoredDisplayState = () => {
         const storedState = localStorage.getItem('displayState');
-        return storedState !== null ? parseInt(storedState, 10) : 2; // Default to UTC only (2)
+        return storedState !== null ? parseInt(storedState, 10) : initialDisplayState;
     };
 
-    // Set display state based on saved or default value
+    // Set display state based on saved or initial value
     let displayState = getStoredDisplayState();
 
     // CSS for the data elements
@@ -84,7 +85,7 @@
 
     // HTML structure for double time display
     const DoubleTimeContainerHtml = () =>
-        '<div id="time-content" style="text-align: center; margin-top: ' + VerticalCorrection  + 'px;">' +
+        '<div id="time-content" style="text-align: center; margin-top: ' + (VerticalCorrectionPosition - 10) + 'px;">' +
         '    <div id="time-content">' +
         '        <h2 class="' + phoneDisplayClass + '" style="margin: 10px; font-size: ' + getFontLabel() + ';" id="utc-label">WORLD TIME</h2>' +
         '        <div class="' + phoneDisplayClass + ' text-left" style="font-size: ' + getFontSizeTime() + '; margin: ' + getFontSizeMarginDouble() + ' 0 0 0;" id="current-utc-time">' + getCurrentUTCTime() + '</div>' +
@@ -98,7 +99,7 @@
     // HTML structure for single time display
     const SingleTimeContainerHtml = (timeLabel, timeValue) =>
         '<div id="time-content" style="text-align: center;">' +
-        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: ' + (VerticalCorrection + 10) + 'px; font-size: ' + getFontLabel() + '; text-align: center;" id="single-label" class="mb-0">' + timeLabel + '</h2>' +
+        '    <h2 class="' + phoneDisplayClass + '" style="margin-top: ' + VerticalCorrectionPosition + 'px; font-size: ' + getFontLabel() + '; text-align: center;" id="single-label" class="mb-0">' + timeLabel + '</h2>' +
         '    <div class="' + phoneDisplayClass + ' text-left" style="margin-top: ' + getFontSizeMarginSingle() + '; font-size: ' + getFontSizeTime() + ';" id="current-single-time">' + timeValue + '</div>' +
         '</div>';
 
@@ -119,10 +120,10 @@
     // Set left position based on viewport dimensions
     const setContainerPosition = () => {
         if (window.innerWidth < 930) {
-            container.style.left = "calc(50% + " + HorizontalCorrection + "px)";
+            container.style.left = "calc(50% + " + HorizontalCorrectionPosition + "px)";
             container.style.position = 'relative';
         } else {
-            container.style.left = window.innerHeight >= 860 ? "calc(50% + " + HorizontalCorrection + "px)" : "calc(35% + " + HorizontalCorrection + "px)";
+            container.style.left = window.innerHeight >= 860 ? "calc(50% + " + HorizontalCorrectionPosition + "px)" : "calc(35% + " + HorizontalCorrectionPosition + "px)";
             container.style.position = 'absolute';
         }
     };
