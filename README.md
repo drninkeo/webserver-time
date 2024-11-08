@@ -6,9 +6,10 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 
 
-## Version 1.0a
+## Version 2.0
 
-- Design adjustments
+- Time display has been moved to the header area
+- Individual position correction added to the header
 
 ## Installation notes:
 
@@ -35,6 +36,10 @@ The following variables can be changed in the header of the screenshot.js:
 ![image](https://github.com/user-attachments/assets/39a6c1ed-251c-4686-9ddc-7e34a7da7293)
 
 ## History:
+
+### Version 1.0a
+
+- Design adjustments
 
 ### Version 1.0
 
