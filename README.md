@@ -6,10 +6,11 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 ![image](https://github.com/user-attachments/assets/8ed6968d-890c-4d4e-a9de-df070edfab9b)
 
 
+## Version 2.1
 
-## Version 2.0a
-
-- 
+- Saving the configuration in a JSON file
+- Added side-by-side arrangement of time displays
+- Determination of the display when called up for the first time
 
 ## Installation notes:
 
@@ -28,12 +29,15 @@ The following variables can be changed in the header of the screenshot.js:
     showTimeOnPhone = true;         // Set to true to enable display on mobile, false to hide it 
     VerticalCorrection = '0'; 	// Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
     HorizontalCorrection = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
+	initialDisplayState = '0';      // 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
+    timeDisplayInline = true;       // true to display times side-by-side, false to display them stacked vertically
 
 ## Important notes:
 
-- A switch in the header of the script can be used to toggle the time display on mobile devices on and off
-- Move the time display to an individual position using variables in the header
 - Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
+- A switch in the json.config can be used to toggle the time display on mobile devices on and off
+- Move the time display to an individual position using variables in the json.config
+- In the json.config you can specify which type of display is loaded the first time it is called and whether the time displays should be one below the other or next to each other
 
 ## History:
 
