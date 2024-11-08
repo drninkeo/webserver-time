@@ -26,11 +26,11 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 The following variables can be changed in the header of the screenshot.js:
 
-    showTimeOnPhone = true;        		 // Set to true to enable display on mobile, false to hide it 
+    showTimeOnPhone = true;        		// Set to true to enable display on mobile, false to hide it 
     VerticalCorrectionPsition = '0'; 	// Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
     HorizontalCorrectionPosition = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
-	initialDisplayState = '0';   	 	  // 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
-    timeDisplayInline = true;      		 // true to display times side-by-side, false to display them stacked vertically
+	initialDisplayState = '0';   	 	// 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
+    timeDisplayInline = true;      		// true to display times side-by-side, false to display them stacked vertically
 
 ## Important notes:
 
