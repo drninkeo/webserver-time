@@ -1,7 +1,7 @@
 setTimeout(() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.2)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.3)      ///
     ///                                                      ///
     ///  by Highpoint                last update: 09.11.24   ///
     ///                                                      ///
@@ -14,7 +14,7 @@ setTimeout(() => {
     let timeDisplayInline = true;
     let showDate = true;
 
-    const plugin_version = '2.2';
+    const plugin_version = '2.3';
 
     function loadConfig() {
         return fetch('/js/plugins/TimeDisplay/configPlugin.json')
@@ -59,16 +59,28 @@ setTimeout(() => {
 
         const getCurrentTime = () => new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         const getCurrentUTCTime = () => new Date().toUTCString().split(' ')[4];
+        
+        // Funktion zum Abrufen des aktuellen lokalen Datums
         const getCurrentLocalDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-        const getCurrentUTCDate = () => new Date().toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        
+        // Funktion zum Abrufen des aktuellen UTC-Datums unter Berücksichtigung der Datumsgrenze
+        const getCurrentUTCDate = () => {
+            const now = new Date();
+            const utcDay = now.getUTCDate().toString().padStart(2, '0');
+            const utcMonth = now.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+            const utcYear = now.getUTCFullYear();
+            const utcWeekday = now.toLocaleString('en-GB', { weekday: 'short', timeZone: 'UTC' });
+            return `${utcWeekday}, ${utcDay} ${utcMonth} ${utcYear}`;
+        };
+
         const getFontLabel = () => (window.innerHeight >= 860 ? '18px' : '14px');
         const getFontSizeTime = () => (window.innerHeight >= 860 ? '36px' : '30px');
         const getFontSizeMarginDouble = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
         const getFontSizeMarginSingle = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
 
         const DoubleTimeContainerHtml = () => {
-            const utcDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentUTCDate()}</div>` : '';
-            const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentLocalDate()}</div>` : '';
+            const utcDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;" id="utc-date">${getCurrentUTCDate()}</div>` : '';
+            const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;" id="local-date">${getCurrentLocalDate()}</div>` : '';
             
             if (timeDisplayInline) {
                 return `
@@ -218,10 +230,12 @@ setTimeout(() => {
             const singleTimeElement = document.getElementById("current-single-time");
             if (singleTimeElement) singleTimeElement.textContent = displayState === 1 ? getCurrentTime() : getCurrentUTCTime();
             
-            const dateDisplays = document.querySelectorAll(".date-display");
-            dateDisplays.forEach(dateDisplay => {
-                dateDisplay.textContent = displayState === 2 ? getCurrentUTCDate() : getCurrentLocalDate();
-            });
+            // Update the dates for both UTC and Local displays separately
+            const localDateElement = document.getElementById("local-date");
+            if (localDateElement) localDateElement.textContent = getCurrentLocalDate();
+            
+            const utcDateElement = document.getElementById("utc-date");
+            if (utcDateElement) utcDateElement.textContent = getCurrentUTCDate();
         };
 
         setInterval(updateTime, 1000);
