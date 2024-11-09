@@ -3,7 +3,8 @@
 This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 
-![image](https://github.com/user-attachments/assets/8ed6968d-890c-4d4e-a9de-df070edfab9b)
+![image](https://github.com/user-attachments/assets/ecff5eed-acdd-4343-bcce-2049ba88a642)
+
 
 ### Version 2.2
 
@@ -29,6 +30,7 @@ The following variables can be changed in the header of the screenshot.js:
     HorizontalCorrectionPosition = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
 	initialDisplayState = '0';   	 	// 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
     timeDisplayInline = true;      		// true to display times side-by-side, false to display them stacked vertically
+    showDate = true;                      	// true to show the date, false to hide it
 
 ## Important notes:
 
@@ -37,7 +39,8 @@ The following variables can be changed in the header of the screenshot.js:
 - Move the time display to an individual position using variables in the json.config
 - In the json.config you can switch on/off the date display, specify which type of display is loaded the first time it is called and whether the time displays should be one below the other or next to each other
 
-![image](https://github.com/user-attachments/assets/6835e215-12b8-4302-ada7-97af3eec8284)
+![image](https://github.com/user-attachments/assets/766b7de0-d0ed-484a-85c6-c899e85fbd03)
+
 
 
 ## History:
