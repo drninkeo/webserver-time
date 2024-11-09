@@ -5,12 +5,10 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 ![image](https://github.com/user-attachments/assets/8ed6968d-890c-4d4e-a9de-df070edfab9b)
 
+### Version 2.2
 
-## Version 2.1
+- Added date display option
 
-- Saving the configuration in a JSON file
-- Added side-by-side arrangement of time displays
-- Determination of the display when called up for the first time
 
 ## Installation notes:
 
@@ -37,12 +35,18 @@ The following variables can be changed in the header of the screenshot.js:
 - Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
 - A switch in the json.config can be used to toggle the time display on mobile devices on and off
 - Move the time display to an individual position using variables in the json.config
-- In the json.config you can specify which type of display is loaded the first time it is called and whether the time displays should be one below the other or next to each other
+- In the json.config you can switch on/off the date display, specify which type of display is loaded the first time it is called and whether the time displays should be one below the other or next to each other
 
 ![image](https://github.com/user-attachments/assets/6835e215-12b8-4302-ada7-97af3eec8284)
 
 
 ## History:
+
+### Version 2.1
+
+- Saving the configuration in a JSON file
+- Added side-by-side arrangement of time displays
+- Determination of the display when called up for the first time
 
 ### Version 2.0
 
