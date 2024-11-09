@@ -1,7 +1,7 @@
 setTimeout(() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.3)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.2)      ///
     ///                                                      ///
     ///  by Highpoint                last update: 09.11.24   ///
     ///                                                      ///
@@ -14,7 +14,7 @@ setTimeout(() => {
     let timeDisplayInline = true;
     let showDate = true;
 
-    const plugin_version = '2.3';
+    const plugin_version = '2.2';
 
     function loadConfig() {
         return fetch('/js/plugins/TimeDisplay/configPlugin.json')
@@ -59,14 +59,16 @@ setTimeout(() => {
 
         const getCurrentTime = () => new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         const getCurrentUTCTime = () => new Date().toUTCString().split(' ')[4];
-        const getCurrentDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        const getCurrentLocalDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        const getCurrentUTCDate = () => new Date().toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
         const getFontLabel = () => (window.innerHeight >= 860 ? '18px' : '14px');
         const getFontSizeTime = () => (window.innerHeight >= 860 ? '36px' : '30px');
         const getFontSizeMarginDouble = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
         const getFontSizeMarginSingle = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
 
         const DoubleTimeContainerHtml = () => {
-            const dateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
+            const utcDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentUTCDate()}</div>` : '';
+            const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentLocalDate()}</div>` : '';
             
             if (timeDisplayInline) {
                 return `
@@ -74,12 +76,12 @@ setTimeout(() => {
                         <div id="utc-container" style="text-align: center; margin-right: 20px;">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
                             <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: ${getFontSizeMarginDouble()} 0 0 0;" id="current-utc-time">${getCurrentUTCTime()}</div>
-                            ${dateHtml}
+                            ${utcDateHtml}
                         </div>
                         <div id="local-container" style="text-align: center; margin-right: 20px;">                           
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
                             <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: ${getFontSizeMarginDouble()} 0 0 0;" id="current-time">${getCurrentTime()}</div>
-                            ${dateHtml}
+                            ${localDateHtml}
                         </div>
                     </div>`;
             } else {
@@ -88,23 +90,22 @@ setTimeout(() => {
                         <div id="utc-container">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
                             <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()}; margin-left: 0; margin-right: 0; margin-bottom: 0;" id="current-utc-time">${getCurrentUTCTime()}</div>
-                            ${dateHtml}
+                            ${utcDateHtml}
                         </div>
                         <div id="local-container">
                             <h2 class="${phoneDisplayClass}" style="margin: 3px; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
                             <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()};" id="current-time">${getCurrentTime()}</div>
-                            ${dateHtml}
+                            ${localDateHtml}
                         </div>
                     </div>`;
             }
         };
 
-        const SingleTimeContainerHtml = (timeLabel, timeValue) => {
-            const dateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
+        const SingleTimeContainerHtml = (timeLabel, timeValue, dateHtml) => {
             return `
                 <div id="time-content" style="text-align: center;">
                     <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()}; text-align: center;" id="single-label" class="mb-0">${timeLabel}</h2>
-                    <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()};" id="current-utc-time">${timeValue}</div>
+                    <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()};" id="current-single-time">${timeValue}</div>
                     ${dateHtml}
                 </div>`;
         };
@@ -130,7 +131,7 @@ setTimeout(() => {
                 if (window.innerWidth >= 930) {
                     container.style.left = "0px";
                 } else {
-					container.style.width = "100%";
+                    container.style.width = "100%";
                     container.style.left = "50%";
                     container.style.transform = "translateX(-50%)";
                 }
@@ -200,9 +201,9 @@ setTimeout(() => {
             if (displayState === 0) {
                 container.innerHTML = DoubleTimeContainerHtml();
             } else if (displayState === 1) {
-                container.innerHTML = SingleTimeContainerHtml("LOCAL TIME", getCurrentTime());
+                container.innerHTML = SingleTimeContainerHtml("LOCAL TIME", getCurrentTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentLocalDate()}</div>` : '');
             } else {
-                container.innerHTML = SingleTimeContainerHtml("WORLD TIME", getCurrentUTCTime());
+                container.innerHTML = SingleTimeContainerHtml("WORLD TIME", getCurrentUTCTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentUTCDate()}</div>` : '');
             }
         };
 
@@ -218,7 +219,9 @@ setTimeout(() => {
             if (singleTimeElement) singleTimeElement.textContent = displayState === 1 ? getCurrentTime() : getCurrentUTCTime();
             
             const dateDisplays = document.querySelectorAll(".date-display");
-            dateDisplays.forEach(dateDisplay => dateDisplay.textContent = getCurrentDate());
+            dateDisplays.forEach(dateDisplay => {
+                dateDisplay.textContent = displayState === 2 ? getCurrentUTCDate() : getCurrentLocalDate();
+            });
         };
 
         setInterval(updateTime, 1000);
