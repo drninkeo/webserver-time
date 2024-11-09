@@ -11,6 +11,7 @@
     ////////////////////////////////////////////////////////////
 
     // Default values - set your personal settings in the configPlugin.json!
+	
     let showTimeOnPhone = true;               // true to display on mobile, false to hide it
     let VerticalCorrectionPosition = '0';     // Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
     let HorizontalCorrectionPosition = '0';   // Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
@@ -148,7 +149,7 @@
 
         // Create a container for time displays
         const container = document.createElement("div");
-        container.style.width = "230px";
+        container.style.width = "auto";
         container.style.display = "flex";
         container.style.alignItems = "center";
         container.style.justifyContent = "center";
