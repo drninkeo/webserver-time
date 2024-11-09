@@ -1,8 +1,7 @@
-(() => {
-
+setTimeout(() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.2)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.3)      ///
     ///                                                      ///
     ///  by Highpoint                last update: 09.11.24   ///
     ///                                                      ///
@@ -10,18 +9,13 @@
     ///                                                      ///
     ////////////////////////////////////////////////////////////
 
-    // Default values - set your personal settings in the configPlugin.json!
-	
-    let showTimeOnPhone = true;               // true to display on mobile, false to hide it
-    let VerticalCorrectionPosition = '0';     // Pixel value for vertical correction of the time display (e.g., 80, -100 / default = 0)
-    let HorizontalCorrectionPosition = '0';   // Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
-    let initialDisplayState = '0';            // 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
-    let timeDisplayInline = true;             // true to display times side-by-side, false to display them stacked vertically
-    let showDate = true;                      // true to show the date, false to hide it
+    let showTimeOnPhone = true;
+    let initialDisplayState = '0';
+    let timeDisplayInline = true;
+    let showDate = true;
 
-    const plugin_version = '2.2'; // Plugin Version
+    const plugin_version = '2.3';
 
-    // Function to load configuration from configPlugin.json
     function loadConfig() {
         return fetch('/js/plugins/TimeDisplay/configPlugin.json')
             .then(response => {
@@ -33,12 +27,10 @@
             })
             .then(config => {
                 if (config) {
-                    showTimeOnPhone = (typeof config.showTimeOnPhone === 'boolean') ? config.showTimeOnPhone : showTimeOnPhone;
-                    VerticalCorrectionPosition = config.VerticalCorrectionPosition || VerticalCorrectionPosition;
-                    HorizontalCorrectionPosition = config.HorizontalCorrectionPosition || HorizontalCorrectionPosition;
+                    showTimeOnPhone = typeof config.showTimeOnPhone === 'boolean' ? config.showTimeOnPhone : showTimeOnPhone;
                     initialDisplayState = config.initialDisplayState || initialDisplayState;
-                    timeDisplayInline = (typeof config.timeDisplayInline === 'boolean') ? config.timeDisplayInline : timeDisplayInline;
-                    showDate = (typeof config.showDate === 'boolean') ? config.showDate : showDate;
+                    timeDisplayInline = typeof config.timeDisplayInline === 'boolean' ? config.timeDisplayInline : timeDisplayInline;
+                    showDate = typeof config.showDate === 'boolean' ? config.showDate : showDate;
                     console.log("Time Display successfully loaded config from configPlugin.json.");
                 } else {
                     console.log("Using default configuration values.");
@@ -49,135 +41,160 @@
             });
     }
 
-    // Load config on startup
     loadConfig().then(() => {
-        initializeTimeDisplay(); // Initialize display after config loading
+        initializeTimeDisplay();
     });
 
     function initializeTimeDisplay() {
         const phoneDisplayClass = showTimeOnPhone ? 'show-phone' : 'hide-phone';
-
-        // Retrieve the display state from localStorage or use the initial setting
         let displayState = localStorage.getItem('displayState');
+        
+        // Set displayState based on initialDisplayState if localStorage is empty
         if (displayState === null) {
-            displayState = initialDisplayState;
+            displayState = parseInt(initialDisplayState, 10);
             localStorage.setItem('displayState', displayState);
         } else {
             displayState = parseInt(displayState, 10);
         }
 
-        // CSS for the data elements
-        const style = document.createElement('style');
-        style.innerHTML = `
-            #data-rt0, #data-rt1 {
-                width: calc(92%);
-                height: 20px;
-                margin-left: 20px;
-                overflow: hidden;
-                white-space: nowrap;
-                line-height: 20px;
-            }
-        `;
-        document.head.appendChild(style);
+        const getCurrentTime = () => new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const getCurrentUTCTime = () => new Date().toUTCString().split(' ')[4];
+        const getCurrentDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        const getFontLabel = () => (window.innerHeight >= 860 ? '18px' : '14px');
+        const getFontSizeTime = () => (window.innerHeight >= 860 ? '36px' : '30px');
+        const getFontSizeMarginDouble = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
+        const getFontSizeMarginSingle = () => (window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : window.innerWidth <= 768 ? '-13px' : '-10px');
 
-        // Functions for formatting time and date
-        const getCurrentTime = () => {
-            const now = new Date();
-            return now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        };
-
-        const getCurrentUTCTime = () => {
-            const now = new Date();
-            return now.toUTCString().split(' ')[4];
-        };
-
-        const getCurrentDate = () => {
-            const now = new Date();
-            return now.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-        };
-
-        // Functions to get font sizes and margins based on viewport
-        const getFontLabel = () => window.innerHeight >= 860 ? '18px' : '14px';
-        const getFontSizeTime = () => window.innerHeight >= 860 ? '36px' : '30px';
-        const getFontSizeMarginDouble = () => window.innerHeight >= 860 && window.innerWidth >= 930 ? '-25px' : (window.innerWidth <= 768 ? '-15px' : '-25px');
-        const getFontSizeMarginSingle = () => window.innerHeight >= 860 && window.innerWidth >= 930 ? '-15px' : (window.innerWidth <= 768 ? '-15px' : '-25px');
-
-        // HTML structure for double time display with date
         const DoubleTimeContainerHtml = () => {
-            const dateHtml = showDate ? `<div class="date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
+            const dateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
+            
             if (timeDisplayInline) {
                 return `
-                    <div id="time-content" style="display: flex; align-items: center; justify-content: center; margin-top: ${VerticalCorrectionPosition - 10}px;">
+                    <div id="time-content" style="display: flex; align-items: center; justify-content: center;">
                         <div id="utc-container" style="text-align: center; margin-right: 20px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: 10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
                             <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: ${getFontSizeMarginDouble()} 0 0 0;" id="current-utc-time">${getCurrentUTCTime()}</div>
                             ${dateHtml}
                         </div>
                         <div id="local-container" style="text-align: center; margin-right: 20px;">                           
-                            <h2 class="${phoneDisplayClass}" style="margin: 10px; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
                             <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: ${getFontSizeMarginDouble()} 0 0 0;" id="current-time">${getCurrentTime()}</div>
-						    ${dateHtml}
+                            ${dateHtml}
                         </div>
                     </div>`;
             } else {
                 return `
-                    <div id="time-content" style="text-align: center; margin-top: ${VerticalCorrectionPosition - 10}px;">
+                    <div id="time-content" style="text-align: center;">
                         <div id="utc-container">
-                            <h2 class="${phoneDisplayClass}" style="margin: 10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
-                            <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: ${getFontSizeMarginDouble()} 0 0 0;" id="current-utc-time">${getCurrentUTCTime()}</div>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()};" id="utc-label">WORLD TIME</h2>
+                            <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()}; margin-left: 0; margin-right: 0; margin-bottom: 0;" id="current-utc-time">${getCurrentUTCTime()}</div>
                             ${dateHtml}
                         </div>
                         <div id="local-container">
-                            <h2 class="${phoneDisplayClass}" style="margin: 0; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
-                            <div class="${phoneDisplayClass} text-left" style="font-size: ${getFontSizeTime()}; margin: -15px 0 0 0;" id="current-time">${getCurrentTime()}</div>
+                            <h2 class="${phoneDisplayClass}" style="margin: 3px; font-size: ${getFontLabel()};" id="local-label">LOCAL TIME</h2>
+                            <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()};" id="current-time">${getCurrentTime()}</div>
                             ${dateHtml}
                         </div>
                     </div>`;
             }
         };
 
-        // HTML structure for single time display with date
         const SingleTimeContainerHtml = (timeLabel, timeValue) => {
-            const dateHtml = showDate ? `<div class="date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
+            const dateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentDate()}</div>` : '';
             return `
                 <div id="time-content" style="text-align: center;">
-                    <h2 class="${phoneDisplayClass}" style="margin-top: ${VerticalCorrectionPosition}px; font-size: ${getFontLabel()}; text-align: center;" id="single-label" class="mb-0">${timeLabel}</h2>
-                    <div class="${phoneDisplayClass} text-left" style="margin-top: ${getFontSizeMarginSingle()}; font-size: ${getFontSizeTime()};" id="current-single-time">${timeValue}</div>
+                    <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${getFontLabel()}; text-align: center;" id="single-label" class="mb-0">${timeLabel}</h2>
+                    <div class="${phoneDisplayClass} text" style="font-size: ${getFontSizeTime()}; margin-top: ${getFontSizeMarginDouble()};" id="current-utc-time">${timeValue}</div>
                     ${dateHtml}
                 </div>`;
         };
 
-        // Create a container for time displays
         const container = document.createElement("div");
-        container.style.width = "auto";
-        container.style.display = "flex";
-        container.style.alignItems = "center";
-        container.style.justifyContent = "center";
-        container.style.flexDirection = "column";
-        container.style.cursor = "pointer";
-        container.style.transform = "translateX(-50%)";
-        container.style.marginTop = "0px";
-        container.title = `Plugin Version: ${plugin_version}`;
         container.id = "time-toggle-container";
-
-        const setContainerPosition = () => {
-            if (window.innerWidth < 930) {
-                container.style.left = `calc(50% + ${HorizontalCorrectionPosition}px)`;
-                container.style.position = 'relative';
-            } else {
-                container.style.left = window.innerHeight >= 860 ? `calc(50% + ${HorizontalCorrectionPosition}px)` : `calc(35% + ${HorizontalCorrectionPosition}px)`;
-                container.style.position = 'absolute';
-            }
-        };
-
-        setContainerPosition();
-
+        container.style.position = "absolute";
+        container.style.cursor = "pointer";
+        container.title = `Plugin Version: ${plugin_version}`;
+        
         const wrapperElement = document.getElementById("wrapper");
         if (wrapperElement) {
             wrapperElement.prepend(container);
         } else {
             console.error("Element with id #wrapper not found.");
         }
+
+        const tunerInfoPanel = document.querySelector(".panel-100.no-bg.tuner-info");
+        const savedPosition = JSON.parse(localStorage.getItem('timeDisplayPosition'));
+
+        if (!savedPosition) {
+            if (tunerInfoPanel) {
+                if (window.innerWidth >= 930) {
+                    container.style.left = "0px";
+                } else {
+					container.style.width = "100%";
+                    container.style.left = "50%";
+                    container.style.transform = "translateX(-50%)";
+                }
+                container.style.top = "0px";
+            } else {
+                container.style.left = "50%";
+                container.style.top = "0px";
+                container.style.transform = "translateX(-50%)";
+            }
+        } else {
+            container.style.left = `${savedPosition.x}px`;
+            container.style.top = `${savedPosition.y}px`;
+        }
+
+        let isDragging = false;
+        let isLongPress = false;
+        let wasDragged = false;
+        let startX, startY, initialX, initialY;
+        let longPressTimeout;
+
+        container.addEventListener("mousedown", (event) => {
+            if (window.innerWidth >= 930) {
+                wasDragged = false;
+                startX = event.clientX;
+                startY = event.clientY;
+                initialX = container.offsetLeft;
+                initialY = container.offsetTop;
+
+                longPressTimeout = setTimeout(() => {
+                    isLongPress = true;
+                    isDragging = true;
+                }, 500); // Trigger drag mode after 500ms
+            }
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            if (isDragging) {
+                wasDragged = true; // Set the flag if movement occurs
+                const dx = event.clientX - startX;
+                const dy = event.clientY - startY;
+                const newLeft = Math.min(Math.max(0, initialX + dx), wrapperElement.offsetWidth - container.offsetWidth);
+                const newTop = Math.min(Math.max(0, initialY + dy), wrapperElement.offsetHeight - container.offsetHeight);
+
+                container.style.left = `${newLeft}px`;
+                container.style.top = `${newTop}px`;
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            if (window.innerWidth >= 930 && isLongPress && isDragging) {
+                localStorage.setItem("timeDisplayPosition", JSON.stringify({ x: container.offsetLeft, y: container.offsetTop }));
+            }
+            clearTimeout(longPressTimeout);
+            isDragging = false;
+            isLongPress = false;
+        });
+
+        container.addEventListener('click', (event) => {
+            if (!wasDragged) {
+                displayState = (displayState + 1) % 3;
+                localStorage.setItem('displayState', displayState);
+                setDisplay();
+            }
+        });
 
         const setDisplay = () => {
             if (displayState === 0) {
@@ -206,16 +223,26 @@
 
         setInterval(updateTime, 1000);
 
-        container.addEventListener('click', () => {
-            displayState = (displayState + 1) % 3;
-            localStorage.setItem('displayState', displayState);
-            setDisplay();
-        });
+        // Insert appropriate <br> tags for tuner-info panel based on conditions
+        if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
+            if (window.innerWidth <= 768 && !timeDisplayInline) {
+                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br>");
+            } else {
+                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
+            }
+        }
 
-        window.addEventListener('resize', () => {
-            setContainerPosition();
-            setDisplay();
+        window.addEventListener("resize", () => {
+            if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
+                if (window.innerWidth <= 768 && !timeDisplayInline) {
+                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br>");
+                } else {
+                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
+                }
+            } else if (tunerInfoPanel) {
+                tunerInfoPanel.previousSibling && tunerInfoPanel.previousSibling.nodeName === "BR" &&
+                tunerInfoPanel.parentNode.removeChild(tunerInfoPanel.previousSibling);
+            }
         });
     }
-
-})();
+}, 100); // Delay execution by 100ms
