@@ -1,7 +1,7 @@
 setTimeout(() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.3)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.2)      ///
     ///                                                      ///
     ///  by Highpoint                last update: 09.11.24   ///
     ///                                                      ///
@@ -14,7 +14,7 @@ setTimeout(() => {
     let timeDisplayInline = true;
     let showDate = true;
 
-    const plugin_version = '2.3';
+    const plugin_version = '2.2';
 
     function loadConfig() {
         return fetch('/js/plugins/TimeDisplay/configPlugin.json')
@@ -127,8 +127,12 @@ setTimeout(() => {
         container.style.position = "absolute";
         container.style.cursor = "pointer";
         container.title = `Plugin Version: ${plugin_version}`;
-        
-        const wrapperElement = document.getElementById("wrapper");
+		
+		if (!window.location.href.includes("setup")) {
+			container.style.zIndex = "9999"; // Ensure the time display is on top if "setup" is not in the URL
+		}
+       
+        const wrapperElement = document.getElementById("wrapper-outer");
         if (wrapperElement) {
             wrapperElement.prepend(container);
         } else {
@@ -142,12 +146,14 @@ setTimeout(() => {
             if (tunerInfoPanel) {
                 if (window.innerWidth >= 930) {
                     container.style.left = "0px";
+					container.style.top = "0px";
                 } else {
                     container.style.width = "100%";
                     container.style.left = "50%";
                     container.style.transform = "translateX(-50%)";
+					container.style.top = "60px";
                 }
-                container.style.top = "0px";
+
             } else {
                 container.style.left = "50%";
                 container.style.top = "0px";
