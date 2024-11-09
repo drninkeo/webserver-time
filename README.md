@@ -30,7 +30,7 @@ The following variables can be changed in the header of the screenshot.js:
     HorizontalCorrectionPosition = '0'; 	// Pixel value for horizontal correction of the time display (e.g., 50, -60 / default = 0)
 	initialDisplayState = '0';   	 	// 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
     timeDisplayInline = true;      		// true to display times side-by-side, false to display them stacked vertically
-    showDate = true;                      // true to show the date, false to hide it
+    showDate = true;                      	// true to show the date, false to hide it
 
 ## Important notes:
 
