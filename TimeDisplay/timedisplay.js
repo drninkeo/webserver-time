@@ -249,7 +249,7 @@ setTimeout(() => {
         // Insert appropriate <br> tags for tuner-info panel based on conditions
         if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
             if (window.innerWidth <= 768 && !timeDisplayInline) {
-                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br>");
+                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br><br>");
             } else {
                 tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
             }
@@ -258,7 +258,7 @@ setTimeout(() => {
         window.addEventListener("resize", () => {
             if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
                 if (window.innerWidth <= 768 && !timeDisplayInline) {
-                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br>");
+                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br><br>");
                 } else {
                     tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
                 }
