@@ -1,7 +1,7 @@
 setTimeout(() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.2)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.3)      ///
     ///                                                      ///
     ///  by Highpoint                last update: 09.11.24   ///
     ///                                                      ///
@@ -14,7 +14,7 @@ setTimeout(() => {
     let timeDisplayInline = true;
     let showDate = true;
 
-    const plugin_version = '2.2';
+    const plugin_version = '2.3';
 
     function loadConfig() {
         return fetch('/js/plugins/TimeDisplay/configPlugin.json')
