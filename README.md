@@ -9,6 +9,7 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 - fixed position removed and drag and drop effect added (by long pressing the mouse button)
 - Layout adjustments (mobile + desktop)
+- UTC date problem fixed 
 
 ## Installation notes:
 
