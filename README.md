@@ -5,11 +5,10 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 ![image](https://github.com/user-attachments/assets/ecff5eed-acdd-4343-bcce-2049ba88a642)
 
-### Version 2.3
+### Version 2.4
 
-- fixed position removed and drag and drop effect added (by long pressing the mouse button)
-- Layout adjustments (mobile + desktop)
-- UTC date problem fixed 
+- remove json.config (is no longer needed due to the few settings - see configuration options)
+- Switching the arrangement (vertical or horizontal) is now done by holding down the time display
 
 ## Installation notes:
 
@@ -26,22 +25,26 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 The following variables can be changed in the header of the screenshot.js:
 
     showTimeOnPhone = true;        		// Set to true to enable display on mobile, false to hide it 
-	initialDisplayState = '0';   	 	// 0 for both, 1 for local time only, 2 for UTC only (default display on first load)
-    timeDisplayInline = true;      		// true to display times side-by-side, false to display them stacked vertically
     showDate = true;                      	// true to show the date, false to hide it
 
 ## Important notes:
 
 - Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
-- A switch in the json.config can be used to toggle the time display on mobile devices on and off
-- Move the time display to an individual position using drag and drop (long pressing the mouse button on time display!)
-- In the json.config you can switch on/off the date display, specify which type of display is loaded the first time it is called and whether the time displays should be one below the other or next to each other
+- A switch in the script header  can be used to toggle the time display on mobile devices and show the date
+- Move the time display to an individual position using drag and drop (mouse button on time display!)
+
 
 ![image](https://github.com/user-attachments/assets/766b7de0-d0ed-484a-85c6-c899e85fbd03)
 
 
 
 ## History:
+
+### Version 2.3
+
+- fixed position removed and drag and drop effect added (by long pressing the mouse button)
+- Layout adjustments (mobile + desktop)
+- UTC date problem fixed 
 
 ### Version 2.2
 
