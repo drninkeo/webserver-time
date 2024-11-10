@@ -29,9 +29,10 @@ The following variables can be changed in the header of the screenshot.js:
 
 ## Important notes:
 
+- Move the time display to an individual position using drag and drop (mouse button on time display!)
 - Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
 - A switch in the script header  can be used to toggle the time display on mobile devices and show the date
-- Move the time display to an individual position using drag and drop (mouse button on time display!)
+
 
 
 ![image](https://github.com/user-attachments/assets/766b7de0-d0ed-484a-85c6-c899e85fbd03)
