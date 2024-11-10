@@ -139,11 +139,9 @@ setTimeout(() => {
             console.error("Element with id #wrapper not found.");
         }
 
-        const tunerInfoPanel = document.querySelector(".panel-100.no-bg.tuner-info");
         const savedPosition = JSON.parse(localStorage.getItem('timeDisplayPosition'));
 
         if (!savedPosition) {
-            if (tunerInfoPanel) {
                 if (window.innerWidth >= 930) {
                     container.style.left = "0px";
 					container.style.top = "0px";
@@ -153,12 +151,6 @@ setTimeout(() => {
                     container.style.transform = "translateX(-50%)";
 					container.style.top = "60px";
                 }
-
-            } else {
-                container.style.left = "50%";
-                container.style.top = "0px";
-                container.style.transform = "translateX(-50%)";
-            }
         } else {
             container.style.left = `${savedPosition.x}px`;
             container.style.top = `${savedPosition.y}px`;
@@ -245,27 +237,28 @@ setTimeout(() => {
         };
 
         setInterval(updateTime, 1000);
+		
+	const tunerInfoPanel = document.querySelector(".tuner-info");
 
-        // Insert appropriate <br> tags for tuner-info panel based on conditions
-        if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
-            if (window.innerWidth <= 768 && !timeDisplayInline) {
-                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br><br>");
-            } else {
-                tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
-            }
-        }
+function updateTunerInfoSpacing() {
+    // Remove existing <br> tags directly before tunerInfoPanel
+    while (tunerInfoPanel && tunerInfoPanel.previousSibling && tunerInfoPanel.previousSibling.nodeName === "BR") {
+        tunerInfoPanel.parentNode.removeChild(tunerInfoPanel.previousSibling);
+    }
 
-        window.addEventListener("resize", () => {
-            if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
-                if (window.innerWidth <= 768 && !timeDisplayInline) {
-                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br><br><br><br>");
-                } else {
-                    tunerInfoPanel.insertAdjacentHTML("beforebegin", "<br><br><br><br>");
-                }
-            } else if (tunerInfoPanel) {
-                tunerInfoPanel.previousSibling && tunerInfoPanel.previousSibling.nodeName === "BR" &&
-                tunerInfoPanel.parentNode.removeChild(tunerInfoPanel.previousSibling);
-            }
-        });
+    // Insert <br> tags based on screen width and conditions
+    if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
+        const brCount = (window.innerWidth <= 768 && !timeDisplayInline) ? 7 : 4;
+        const brTags = "<br>".repeat(brCount);
+        tunerInfoPanel.insertAdjacentHTML("beforebegin", brTags);
+    }
+}
+
+// Initial call to set spacing on page load
+updateTunerInfoSpacing();
+
+// Update spacing on window resize
+window.addEventListener("resize", updateTunerInfoSpacing);
+
     }
 }, 100); // Delay execution by 100ms
