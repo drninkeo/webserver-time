@@ -275,3 +275,4 @@ setTimeout(() => {
 
     initializeTimeDisplay();
 }, 100); // Delay execution by 100ms
+ 
