@@ -7,7 +7,7 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 ## Version 2.4
 
-- Remove json.config (is no longer needed due to the few settings - see configuration options)
+- Removed json.config (is no longer needed due to the few settings - see configuration options)
 - Switching the arrangement (vertical or horizontal) is now done by holding down the time display (2.5 seconds!)
 - The size of the time display can be changed variably using the scroll wheel
 
