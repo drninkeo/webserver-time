@@ -1,11 +1,13 @@
 # Time Display Plugin for [FM-DX-Webserver](https://github.com/NoobishSVK/fm-dx-webserver)
 
-This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
+This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
 
 
 ![image](https://github.com/user-attachments/assets/fb28ea11-d080-45ab-9edb-e7a473b4e6f1)
 
-![image](https://github.com/user-attachments/assets/929b1aa5-56a7-4dee-99dd-77ec86e7e601)
+![image](https://github.com/user-attachments/assets/d0ede0a8-2223-4b68-9b79-47ec3eba4e09)
+
+
 
 
 ## Version 2.5
@@ -32,7 +34,7 @@ The following variables can be changed in the header of the screenshot.js:
 ## Important notes:
 
 - Move the time display to an individual position using drag and drop (mouse button on time display!)
-- Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
+- Click on the time display to switch between UTC, local time and server time and the different display options
 - The size of the time display can be changed variably using the scroll wheel
 - Switching the arrangement (vertical or horizontal) is done by holding down the time display (2.5 seconds!)
 - A switch in the script header can be used to turn the time display on mobile devices and the date on and off
