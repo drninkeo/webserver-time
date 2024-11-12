@@ -9,7 +9,7 @@
 	///                                                      ///
     ////////////////////////////////////////////////////////////
 
-    // Konfigurierbare Optionen
+    // Configurable options
     let showTimeOnPhone = true;
     let showDate = true;
 
@@ -19,26 +19,26 @@
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
 
-    // Koordinaten abrufen und Variable zum Speichern der Serverzeit-Offset deklarieren
+    // Fetch coordinates and declare variable for storing server time offset
     const LAT = localStorage.getItem('qthLatitude');
     const LON = localStorage.getItem('qthLongitude');
-    let serverTimeOffset = 0; // Offset in Stunden von UTC
+    let serverTimeOffset = 0; // Offset in hours from UTC
 
-    // Funktion zum Laden des Offsets von localStorage oder Abrufen über die API
+    // Function to load the offset from localStorage or fetch via API
     function loadServerTimeOffset() {
         const savedOffsetKey = `serverTimeOffset_${LAT}_${LON}`;
         const savedOffset = localStorage.getItem(savedOffsetKey);
 
         if (savedOffset !== null) {
             serverTimeOffset = parseFloat(savedOffset);
-            console.log("UTC Offset aus localStorage geladen (Stunden):", serverTimeOffset);
-			serverTimeOffset = serverTimeOffset - 1;
+            console.log("UTC Offset loaded from localStorage (hours):", serverTimeOffset);
+            serverTimeOffset = serverTimeOffset - 1;
         } else {
             fetchUtcOffset(savedOffsetKey);
         }
     }
 
-    // UTC-Offset von der GeoNames-API abrufen und in localStorage speichern
+    // Fetch UTC offset from GeoNames API and save to localStorage
     function fetchUtcOffset(savedOffsetKey) {
         if (LAT && LON) {
             fetch(`http://api.geonames.org/timezoneJSON?lat=${LAT}&lng=${LON}&username=highpoint`)
@@ -46,12 +46,12 @@
                 .then(data => {
                     if (data) {
                         serverTimeOffset = data.rawOffset;
-                        console.log("UTC Offset abgerufen und gespeichert (Stunden):", serverTimeOffset);
+                        console.log("UTC Offset fetched and saved (hours):", serverTimeOffset);
                         localStorage.setItem(savedOffsetKey, serverTimeOffset);
-						serverTimeOffset = serverTimeOffset - 1;
+                        serverTimeOffset = serverTimeOffset - 1;
                     }
                 })
-                .catch(error => console.error("Fehler beim Abrufen des UTC Offsets:", error));
+                .catch(error => console.error("Error fetching the UTC Offset:", error));
         }
     }
 
@@ -80,15 +80,15 @@
         };
 
         const getServerTime = () => {
-            const nowUTC = new Date(); // Aktuelle UTC-Zeit
-            const serverTime = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Offset in Millisekunden anwenden
+            const nowUTC = new Date(); // Current UTC time
+            const serverTime = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
 
             return serverTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         };
 
         const getCurrentServerDate = () => {
-            const nowUTC = new Date(); // Aktuelle UTC-Zeit
-            const serverDate = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Offset in Millisekunden anwenden
+            const nowUTC = new Date(); // Current UTC time
+            const serverDate = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
 
             return serverDate.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
         };
@@ -107,7 +107,7 @@
         if (wrapperElement) {
             wrapperElement.prepend(container);
         } else {
-            console.error("Element mit id #wrapper nicht gefunden.");
+            console.error("Element with id #wrapper not found.");
         }
 
         const savedPosition = JSON.parse(localStorage.getItem('timeDisplayPosition'));
@@ -213,12 +213,12 @@
         const setDisplay = () => {
             if (displayState === 0) {
                 container.innerHTML = WorldLocalContainerHtml();
-			} else if (displayState === 1) {	
-				container.innerHTML = WorldServerContainerHtml();		
+            } else if (displayState === 1) {	
+                container.innerHTML = WorldServerContainerHtml();		
             } else if (displayState === 2) {
-				container.innerHTML = LocalServerContainerHtml();
-			} else if (displayState === 3) {
-				container.innerHTML = LocalServerWorldContainerHtml();
+                container.innerHTML = LocalServerContainerHtml();
+            } else if (displayState === 3) {
+                container.innerHTML = LocalServerWorldContainerHtml();
             } else if (displayState === 4) {							
                 container.innerHTML = LocalTimeContainerHtml("LOCAL TIME", getCurrentTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentLocalDate()}</div>` : '');
             } else if (displayState === 5) {
@@ -230,7 +230,7 @@
         };
 		
         const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="local-date">${getCurrentLocalDate()}</div>` : '';
-		const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="utc-date">${getCurrentWorldDate()}</div>` : '';
+        const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="utc-date">${getCurrentWorldDate()}</div>` : '';
         const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="server-date">${getCurrentServerDate()}</div>` : '';
 
         const WorldLocalContainerHtml = () => {
