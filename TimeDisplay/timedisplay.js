@@ -133,7 +133,7 @@
 
         function updateFontSizes() {
             let adjustedFontSizeTime = window.innerWidth <= 768 ? fontSizeTime * 0.9 : fontSizeTime;
-            let adjustedFontLabelSize = adjustedFontSizeTime / 2;
+            let adjustedFontLabelSize = adjustedFontSizeTime / 1;
             let adjustedFontDateSize = (adjustedFontSizeTime / 1.5) - 3;
 
             const timeElements = container.querySelectorAll(".text");
