@@ -1,7 +1,7 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5)      ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5a)     ///
     ///                                                      ///
     ///  by Highpoint                last update: 12.11.24   ///
     ///                                                      ///
@@ -15,7 +15,7 @@
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5';
+    const plugin_version = '2.5a';
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
 
@@ -102,7 +102,7 @@
             container.style.zIndex = "1";
         }
 
-        const wrapperElement = document.getElementById("wrapper-outer");
+        const wrapperElement = document.getElementById("wrapper");
         if (wrapperElement) {
             wrapperElement.prepend(container);
         } else {
@@ -133,7 +133,7 @@
 
         function updateFontSizes() {
             let adjustedFontSizeTime = window.innerWidth <= 768 ? fontSizeTime * 0.9 : fontSizeTime;
-            let adjustedFontLabelSize = adjustedFontSizeTime / 1;
+            let adjustedFontLabelSize = adjustedFontSizeTime / 2;
             let adjustedFontDateSize = (adjustedFontSizeTime / 1.5) - 3;
 
             const timeElements = container.querySelectorAll(".text");
