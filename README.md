@@ -5,6 +5,7 @@ This plugin provides a time display (UTC/LOCAL) for the FM-DX web server.
 
 ![image](https://github.com/user-attachments/assets/fb28ea11-d080-45ab-9edb-e7a473b4e6f1)
 
+![image](https://github.com/user-attachments/assets/929b1aa5-56a7-4dee-99dd-77ec86e7e601)
 
 
 ## Version 2.5
@@ -36,7 +37,7 @@ The following variables can be changed in the header of the screenshot.js:
 - Switching the arrangement (vertical or horizontal) is done by holding down the time display (2.5 seconds!)
 - A switch in the script header can be used to turn the time display on mobile devices and the date on and off
 
-![image](https://github.com/user-attachments/assets/766b7de0-d0ed-484a-85c6-c899e85fbd03)
+
 
 
 
