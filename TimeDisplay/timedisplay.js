@@ -32,7 +32,7 @@
         if (savedOffset !== null) {
             serverTimeOffset = parseFloat(savedOffset);
             console.log("UTC Offset loaded from localStorage (hours):", serverTimeOffset);
-            serverTimeOffset = serverTimeOffset - 1;
+
         } else {
             fetchUtcOffset(savedOffsetKey);
         }
@@ -46,9 +46,8 @@
                 .then(data => {
                     if (data) {
                         serverTimeOffset = data.rawOffset;
-                        console.log("UTC Offset fetched and saved (hours):", serverTimeOffset);
                         localStorage.setItem(savedOffsetKey, serverTimeOffset);
-                        serverTimeOffset = serverTimeOffset - 1;
+                        console.log("UTC Offset fetched and saved (hours):", serverTimeOffset);
                     }
                 })
                 .catch(error => console.error("Error fetching the UTC Offset:", error));
@@ -79,16 +78,16 @@
             return `${utcWeekday}, ${utcDay} ${utcMonth} ${utcYear}`;
         };
 
-        const getServerTime = () => {
-            const nowUTC = new Date(); // Current UTC time
-            const serverTime = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
-
-            return serverTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        };
+		const getServerTime = () => {
+			const now = new Date(); // Aktuelles Datum und Uhrzeit
+			const utcNow = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()); // Konvertiert das lokale Datum in UTC
+			const serverTime = new Date(utcNow.getTime() + serverTimeOffset * 60 * 60 * 1000); // Wendet den Offset in Millisekunden an
+			return serverTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+		};
 
         const getCurrentServerDate = () => {
             const nowUTC = new Date(); // Current UTC time
-            const serverDate = new Date(nowUTC.getTime() + serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
+            const serverDate = new Date(nowUTC.getTime() - serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
 
             return serverDate.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
         };
@@ -230,7 +229,7 @@
         };
 		
         const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="local-date">${getCurrentLocalDate()}</div>` : '';
-        const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="utc-date">${getCurrentWorldDate()}</div>` : '';
+        const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="world-date">${getCurrentWorldDate()}</div>` : '';
         const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="server-date">${getCurrentServerDate()}</div>` : '';
 
         const WorldLocalContainerHtml = () => {
@@ -421,8 +420,8 @@
             const localDateElement = document.getElementById("local-date");
             if (localDateElement) localDateElement.textContent = getCurrentLocalDate();
 
-            const utcDateElement = document.getElementById("utc-date");
-            if (utcDateElement) utcDateElement.textContent = getCurrentWorldDate();
+            const WorldDateElement = document.getElementById("world-date");
+            if (WorldDateElement) WorldDateElement.textContent = getCurrentWorldDate();
             
             const serverDateElement = document.getElementById("server-date");
             if (serverDateElement) serverDateElement.textContent = getCurrentServerDate();
