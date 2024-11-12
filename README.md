@@ -34,7 +34,7 @@ The following variables can be changed in the header of the screenshot.js:
 ## Important notes:
 
 - Move the time display to an individual position using drag and drop (mouse button on time display!)
-- Click on the time display to switch beetween UTC, Local Time and UTC & Local Time
+- Click on the time display to switch between UTC, local time and server time and the different display options
 - The size of the time display can be changed variably using the scroll wheel
 - Switching the arrangement (vertical or horizontal) is done by holding down the time display (2.5 seconds!)
 - A switch in the script header can be used to turn the time display on mobile devices and the date on and off
