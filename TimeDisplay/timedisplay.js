@@ -19,15 +19,18 @@
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
 	
-	// Check if required localStorage items are present
-    const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
+	if (window.innerWidth >= 920) {
 	
-	setTimeout(() => {
-		if (timedisplaytoastinfo === null) {
-			sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCATION and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
-			localStorage.setItem("timedisplaytoastinfo", true);
-		}
-    }, 1000);
+		// Check if required localStorage items are present
+		const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
+	
+		setTimeout(() => {
+			if (timedisplaytoastinfo === null) {
+				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCATION and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
+				localStorage.setItem("timedisplaytoastinfo", true);
+			}
+		}, 1000);
+	}
 
     // Fetch coordinates and declare variable for storing server time offset
     const LAT = localStorage.getItem('qthLatitude');
