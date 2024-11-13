@@ -26,7 +26,7 @@ The following variables can be changed in the header of the screenshot.js:
 
     showTimeOnPhone = true;        		// Set to true to enable display on mobile, false to hide it 
     showDate = true;                      	// true to show the date, false to hide it
-	let updateInfo = true; 			// Enable or disable the daily plugin version check for admin
+    updateInfo = true; 			// Enable or disable the daily plugin version check for admin
 
 ## Important notes:
 
