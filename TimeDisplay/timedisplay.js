@@ -1,23 +1,33 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5a)     ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5b)     ///
     ///                                                      ///
-    ///  by Highpoint                last update: 12.11.24   ///
+    ///  by Highpoint                last update: 13.11.24   ///
     ///                                                      ///
     ///  https://github.com/Highpoint2000/webserver-time     ///
 	///                                                      ///
     ////////////////////////////////////////////////////////////
 
     // Configurable options
-    let showTimeOnPhone = true;
-    let showDate = true;
+    let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
+    let showDate = true;			// true to show the date, false to hide it                  	
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5a';
+    const plugin_version = '2.5b';
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
+	
+	// Check if required localStorage items are present
+    const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
+	
+	setTimeout(() => {
+		if (timedisplaytoastinfo === null) {
+			sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCATION and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
+			localStorage.setItem("timedisplaytoastinfo", true);
+		}
+    }, 1000);
 
     // Fetch coordinates and declare variable for storing server time offset
     const LAT = localStorage.getItem('qthLatitude');
@@ -117,22 +127,21 @@
                 container.style.transform = "translateX(-50%)";
                 container.style.top = "10%";
                 container.style.width = "auto";
-                localStorage.setItem("timeDisplayPosition", JSON.stringify({ x: container.offsetLeft, y: container.offsetTop }));
             } else {
                 container.style.left = `${savedPosition.x}px`;
                 container.style.top = `${savedPosition.y}px`;
             }
         } else {
             container.style.left = "50%";
-            container.style.transform = "translateX(-48%)";
-            container.style.top = "70px";
+            container.style.transform = "translateX(-47.5%)";
+            container.style.top = "20px";
             container.style.width = "400px";
         }    
 
         let fontSizeTime = JSON.parse(localStorage.getItem("fontSizeTime")) ?? 28;
 
         function updateFontSizes() {
-            let adjustedFontSizeTime = window.innerWidth <= 768 ? fontSizeTime * 0.9 : fontSizeTime;
+            let adjustedFontSizeTime = window.innerWidth <= 768 ? fontSizeTime * 0.88 : fontSizeTime;
             let adjustedFontLabelSize = adjustedFontSizeTime / 2;
             let adjustedFontDateSize = (adjustedFontSizeTime / 1.5) - 3;
 
@@ -218,19 +227,19 @@
                 container.innerHTML = LocalServerContainerHtml();
             } else if (displayState === 3) {
                 container.innerHTML = LocalServerWorldContainerHtml();
-            } else if (displayState === 4) {							
-                container.innerHTML = LocalTimeContainerHtml("LOCAL TIME", getCurrentTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentLocalDate()}</div>` : '');
+            } else if (displayState === 4) {							 
+                container.innerHTML = LocalTimeContainerHtml();
             } else if (displayState === 5) {
-                container.innerHTML = WorldTimeContainerHtml("WORLD TIME", getCurrentUTCTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentWorldDate()}</div>` : '');
+                container.innerHTML = WorldTimeContainerHtml();
             } else if (displayState === 6) {
-                container.innerHTML = ServerTimeContainerHtml("SERVER TIME", getServerTime(), showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px;">${getCurrentServerDate()}</div>` : '');
+                container.innerHTML = ServerTimeContainerHtml();
             }
             updateFontSizes();
         };
 		
-        const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="local-date">${getCurrentLocalDate()}</div>` : '';
-        const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="world-date">${getCurrentWorldDate()}</div>` : '';
-        const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="server-date">${getCurrentServerDate()}</div>` : '';
+        const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="local-date">${getCurrentLocalDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
+		const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="world-date">${getCurrentWorldDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
+        const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="server-date">${getCurrentServerDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
 
         const WorldLocalContainerHtml = () => {
             
