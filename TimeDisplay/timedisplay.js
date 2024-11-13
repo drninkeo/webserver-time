@@ -26,7 +26,7 @@
 	
 		setTimeout(() => {
 			if (timedisplaytoastinfo === null) {
-				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCATION and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
+				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCAL and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
 				localStorage.setItem("timedisplaytoastinfo", true);
 			}
 		}, 1000);
