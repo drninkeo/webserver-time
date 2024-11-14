@@ -178,19 +178,29 @@
             dateElements.forEach(el => el.style.fontSize = `${adjustedFontDateSize}px`);
         }
 
-        container.addEventListener("wheel", (event) => {
-            event.preventDefault();
-            fontSizeTime += event.deltaY < 0 ? 2 : -2;
-            updateFontSizes();
-            localStorage.setItem("fontSizeTime", JSON.stringify(fontSizeTime));
-        });
+container.addEventListener("wheel", (event) => {
+    event.preventDefault();
+
+    // Adjust font size based on wheel direction
+    if (event.deltaY < 0) {
+        // Increase font size, but not above 20
+        fontSizeTime = Math.min(fontSizeTime + 2, 35);
+    } else {
+        // Decrease font size, but not below 5
+        fontSizeTime = Math.max(fontSizeTime - 2, 20);
+    }
+
+    // Update font sizes based on the new fontSizeTime
+    updateFontSizes();
+
+    // Store the current font size in localStorage
+    localStorage.setItem("fontSizeTime", JSON.stringify(fontSizeTime));
+});
+
 
         let isDragging = false;
         let wasDragged = false;
         let startX, startY, initialX, initialY;
-
-
-
 
 		// Beim Laden der Seite die Position aus localStorage setzen
 		window.addEventListener('load', () => {
