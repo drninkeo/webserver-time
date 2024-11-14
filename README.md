@@ -41,7 +41,7 @@ The following variables can be changed in the header of the screenshot.js:
 
 ## History:
 
-### Version 2.5d
+### Version 2.5c
 
 - Daily update check for admin
 
