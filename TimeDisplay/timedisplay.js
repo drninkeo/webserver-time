@@ -1,9 +1,9 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5c)     ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5d)     ///
     ///                                                      ///
-    ///  by Highpoint                last update: 13.11.24   ///
+    ///  by Highpoint                last update: 14.11.24   ///
     ///                                                      ///
     ///  https://github.com/Highpoint2000/webserver-time     ///
 	///                                                      ///
@@ -12,11 +12,11 @@
     // Configurable options
     let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
     let showDate = true;			// true to show the date, false to hide it  
-	let updateInfo = true; 			// Enable or disable the daily version check for admin	
+	let updateInfo = true; 			// Enable or disable the daily plugin update check for admin	
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5c';
+    const plugin_version = '2.5d';
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
 	let isTuneAuthenticated;
@@ -114,7 +114,7 @@
 
         const container = document.createElement("div");
         container.id = "time-toggle-container";
-        container.style.position = "absolute";
+        container.style.position = "relative";
         container.style.cursor = "pointer";
         container.title = `Plugin Version: ${plugin_version}`;
         
@@ -133,9 +133,21 @@
 
         if (window.innerWidth >= 930) {
             if (!savedPosition) {
-                container.style.left = "50%";
-                container.style.transform = "translateX(-50%)";
-                container.style.top = "10%";
+				let tunerInfoPanel = document.querySelector('.panel-100.no-bg.tuner-info');
+				if (tunerInfoPanel) {
+					if (window.innerHeight <= 860) {
+						container.style.left = "0px";		
+					} else {
+						container.style.left = "-450px";
+					}
+				} else {
+					if (window.innerHeight <= 860) {
+						container.style.left = "-450px";		
+					} else {
+						container.style.left = "0px";
+					}
+				}
+				container.style.top = "100px";			
                 container.style.width = "auto";
             } else {
                 container.style.left = `${savedPosition.x}px`;
@@ -145,13 +157,14 @@
             container.style.left = "50%";
             container.style.transform = "translateX(-47.5%)";
             container.style.top = "20px";
-            container.style.width = "400px";
+            container.style.width = "340px";
         }    
 
         let fontSizeTime = JSON.parse(localStorage.getItem("fontSizeTime")) ?? 28;
 
         function updateFontSizes() {
-            let adjustedFontSizeTime = window.innerWidth <= 768 ? fontSizeTime * 0.88 : fontSizeTime;
+            let adjustedFontSizeTime = window.innerWidth <= 768 && displayState === 3 ? fontSizeTime * 0.75 : fontSizeTime;
+
             let adjustedFontLabelSize = adjustedFontSizeTime / 2;
             let adjustedFontDateSize = (adjustedFontSizeTime / 1.5) - 3;
 
@@ -176,31 +189,56 @@
         let wasDragged = false;
         let startX, startY, initialX, initialY;
 
-        container.addEventListener("mousedown", (event) => {
-            isDragging = true;
-            wasDragged = false;
-            startX = event.clientX;
-            startY = event.clientY;
-            initialX = container.offsetLeft;
-            initialY = container.offsetTop;
-        });
 
-        document.addEventListener("mousemove", (event) => {
-            if (isDragging) {
-                const dx = event.clientX - startX;
-                const dy = event.clientY - startY;
-                container.style.left = `${initialX + dx}px`;
-                container.style.top = `${initialY + dy}px`;
-                wasDragged = true;
-            }
-        });
 
-        document.addEventListener("mouseup", () => {
-            if (isDragging) {
-                localStorage.setItem("timeDisplayPosition", JSON.stringify({ x: container.offsetLeft, y: container.offsetTop }));
-                isDragging = false;
-            }
-        });
+
+		// Beim Laden der Seite die Position aus localStorage setzen
+		window.addEventListener('load', () => {
+			const savedPosition = JSON.parse(localStorage.getItem("timeDisplayPosition"));
+			if (savedPosition) {
+				container.style.left = `${savedPosition.x}px`;
+				container.style.top = `${savedPosition.y}px`;
+			}
+		});
+
+		container.addEventListener("mousedown", (event) => {
+			isDragging = true;
+			wasDragged = false;
+
+			// Berechne den Startpunkt der Maus
+			startX = event.clientX;
+			startY = event.clientY;
+
+			// Berechne die aktuelle Position des Containers
+			initialX = parseInt(container.style.left || 0, 10); // Default 0, falls keine Position gesetzt wurde
+			initialY = parseInt(container.style.top || 0, 10);  // Default 0, falls keine Position gesetzt wurde
+		});
+
+		document.addEventListener("mousemove", (event) => {
+			if (isDragging) {
+				const dx = event.clientX - startX;
+				const dy = event.clientY - startY;
+
+				// Setze die neue Position des Containers
+				container.style.left = `${initialX + dx}px`;
+				container.style.top = `${initialY + dy}px`;
+
+				wasDragged = true;
+			}
+		});
+
+		document.addEventListener("mouseup", () => {
+			if (isDragging) {
+				// Speichere die Position nach dem Loslassen der Maus
+				const newPosition = {
+					x: parseInt(container.style.left, 10),
+					y: parseInt(container.style.top, 10)
+				};
+				localStorage.setItem("timeDisplayPosition", JSON.stringify(newPosition));
+				isDragging = false;
+			}
+		});
+
 
         let isLongPress = false;
         let longPressTimeout;
@@ -456,7 +494,7 @@
             }
 
             if (window.innerWidth < 930 && tunerInfoPanel && showTimeOnPhone) {
-                const brCount = (window.innerWidth <= 768 && !timeDisplayInline) ? 7 : 4;
+                const brCount = (window.innerWidth <= 768 && !timeDisplayInline) ? 7 : 2;
                 const brTags = "<br>".repeat(brCount);
                 tunerInfoPanel.insertAdjacentHTML("beforebegin", brTags);
             }
@@ -531,7 +569,7 @@
           // External version is newer and notification should be shown
           if (shouldShowNotification()) {
             console.log(`${plugin_name}: Plugin update available: ${plugin_version} -> ${externalPluginVersion}`);
-			sendToast('warning important', `${plugin_name}`, `Plugin update available: ${plugin_version} -> ${externalPluginVersion}`, false, false);
+			sendToast('warning important', `${plugin_name}`, `Update available:<br>${plugin_version} -> ${externalPluginVersion}`, false, false);
           }
         } else {
           // Versions are the same
