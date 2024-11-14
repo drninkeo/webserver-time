@@ -10,6 +10,7 @@ This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
 
 - Code adjustments
 - Make sure the position is maintained when changing the window size
+- Scroll limits built in
 
 ## Installation notes:
 
