@@ -6,11 +6,9 @@ This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
 
 ![image](https://github.com/user-attachments/assets/d0ede0a8-2223-4b68-9b79-47ec3eba4e09)
 
-## Version 2.5b
+## Version 2.5c
 
-- Fixed display on mobile devices
-- Adding a toast notification to the operation on first access
-- Minor code corrections
+- Daily update check for admin
 
 ## Installation notes:
 
@@ -28,6 +26,7 @@ The following variables can be changed in the header of the screenshot.js:
 
     showTimeOnPhone = true;        		// Set to true to enable display on mobile, false to hide it 
     showDate = true;                      	// true to show the date, false to hide it
+	let updateInfo = true; 			// Enable or disable the daily plugin version check for admin
 
 ## Important notes:
 
@@ -42,6 +41,12 @@ The following variables can be changed in the header of the screenshot.js:
 
 
 ## History:
+
+### Version 2.5b
+
+- Fixed display on mobile devices
+- Adding a toast notification to the operation on first access
+- Minor code corrections
 
 ### Version 2.5a
 
