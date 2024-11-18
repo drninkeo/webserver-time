@@ -1,7 +1,7 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5b)     ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5c)     ///
     ///                                                      ///
     ///  by Highpoint                last update: 13.11.24   ///
     ///                                                      ///
@@ -11,13 +11,20 @@
 
     // Configurable options
     let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
-    let showDate = true;			// true to show the date, false to hide it                  	
+    let showDate = true;			// true to show the date, false to hide it  
+	let updateInfo = true; 			// Enable or disable the daily version check for admin	
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5b';
+    const plugin_version = '2.5c';
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
+	let isTuneAuthenticated;
+	
+	// Define local version and Github settings
+	const plugin_path = 'https://raw.githubusercontent.com/highpoint2000/webserver-time/';
+	const plugin_JSfile = 'main/TimeDisplay/timedisplay.js'
+	const plugin_name = 'Time Display';
 	
 	if (window.innerWidth >= 920) {
 	
@@ -458,11 +465,104 @@
         updateTunerInfoSpacing();
         window.addEventListener("resize", updateTunerInfoSpacing);
     }
+	 
+  const storageKey = `${plugin_name}_lastUpdateNotification`; // Unique key for localStorage
 
+  // Function to check if the notification was shown today
+  function shouldShowNotification() {
+    const lastNotificationDate = localStorage.getItem(storageKey);
+    const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+    if (lastNotificationDate === today) {
+      return false; // Notification already shown today
+    }
+    // Update the date in localStorage to today
+    localStorage.setItem(storageKey, today);
+    return true;
+  }
+
+  // Function to check plugin version
+  function checkPluginVersion() {
+    // Fetch and evaluate the plugin script
+    fetch(`${plugin_path}${plugin_JSfile}`)
+      .then(response => response.text())
+      .then(script => {
+        // Search for plugin_version in the external script
+        const pluginVersionMatch = script.match(/const plugin_version = '([\d.]+[a-z]*)';/);
+        if (!pluginVersionMatch) {
+          console.error(`${plugin_name}: Plugin version could not be found`);
+          return;
+        }
+
+        const externalPluginVersion = pluginVersionMatch[1];
+
+        // Function to compare versions
+        function compareVersions(local, remote) {
+          const localParts = local.split(/[\d.]+|[a-z]+/);
+          const remoteParts = remote.split(/[\d.]+|[a-z]+/);
+
+          // First compare numeric parts
+          for (let i = 0; i < Math.max(localParts.length, remoteParts.length); i++) {
+            const localPart = parseInt(localParts[i] || '0', 10);
+            const remotePart = parseInt(remoteParts[i] || '0', 10);
+
+            if (localPart > remotePart) return 1;
+            if (localPart < remotePart) return -1;
+          }
+
+          // Compare alphabetic suffixes
+          const localSuffix = local.match(/[a-z]+$/);
+          const remoteSuffix = remote.match(/[a-z]+$/);
+
+          if (!localSuffix && remoteSuffix) return -1;
+          if (localSuffix && !remoteSuffix) return 1;
+          if (localSuffix && remoteSuffix) {
+            if (localSuffix[0] > remoteSuffix[0]) return 1;
+            if (localSuffix[0] < remoteSuffix[0]) return -1;
+          }
+          return 0;
+        }
+
+        // Check version and show notification if needed
+        const comparisonResult = compareVersions(plugin_version, externalPluginVersion);
+        if (comparisonResult === 1) {
+          // Local version is newer than the external version
+          console.log(`${plugin_name}: The local version is newer than the plugin version.`);
+        } else if (comparisonResult === -1) {
+          // External version is newer and notification should be shown
+          if (shouldShowNotification()) {
+            console.log(`${plugin_name}: Plugin update available: ${plugin_version} -> ${externalPluginVersion}`);
+			sendToast('warning important', `${plugin_name}`, `Plugin update available: ${plugin_version} -> ${externalPluginVersion}`, false, false);
+          }
+        } else {
+          // Versions are the same
+          console.log(`${plugin_name}: The local version matches the plugin version.`);
+        }
+      })
+      .catch(error => {
+        console.error(`${plugin_name}: Error fetching the plugin script:`, error);
+      });
+  }
+
+  // Function to check if the user is logged in as an administrator
+    function checkAdminMode() {
+        const bodyText = document.body.textContent || document.body.innerText;
+        let isAdminLoggedIn = bodyText.includes("You are logged in as an administrator.") || bodyText.includes("You are logged in as an adminstrator.");
+ 
+        if (isAdminLoggedIn) {
+            console.log(`Admin mode found`);
+            isTuneAuthenticated = true;
+        } 
+    }
+
+	checkAdminMode(); // Check admin mode
     loadServerTimeOffset();
-	
+
 	setTimeout(() => {
 		initializeTimeDisplay();
-	}, 100);
+		// Execute the plugin version check if updateInfo is true
+		if (updateInfo && isTuneAuthenticated) {
+			checkPluginVersion();
+			}
+		}, 200);
 
 })();
