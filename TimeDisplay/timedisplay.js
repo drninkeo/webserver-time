@@ -466,17 +466,17 @@
         window.addEventListener("resize", updateTunerInfoSpacing);
     }
 	 
-  const storageKey = `${plugin_name}_lastUpdateNotification`; // Unique key for localStorage
+  const PluginUpdateKey = `${plugin_name}_lastUpdateNotification`; // Unique key for localStorage
 
   // Function to check if the notification was shown today
   function shouldShowNotification() {
-    const lastNotificationDate = localStorage.getItem(storageKey);
+    const lastNotificationDate = localStorage.getItem(PluginUpdateKey);
     const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
     if (lastNotificationDate === today) {
       return false; // Notification already shown today
     }
     // Update the date in localStorage to today
-    localStorage.setItem(storageKey, today);
+    localStorage.setItem(PluginUpdateKey, today);
     return true;
   }
 
