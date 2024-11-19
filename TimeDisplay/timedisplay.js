@@ -163,7 +163,7 @@
 						container.style.left = "0px";
 					}
 				}
-				container.style.top = "100px";			
+				container.style.top = "110px";			
                 container.style.width = "auto";
             } else {
                 container.style.left = `${savedPosition.x}px`;
