@@ -1,9 +1,9 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5d)     ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5e)     ///
     ///                                                      ///
-    ///  by Highpoint                last update: 14.11.24   ///
+    ///  by Highpoint                last update: 19.11.24   ///
     ///                                                      ///
     ///  https://github.com/Highpoint2000/webserver-time     ///
 	///                                                      ///
@@ -16,10 +16,27 @@
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5d';
+    const plugin_version = '2.5e';
+	const ipApiUrl = 'https://api.ipify.org?format=json';
+	
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
 	let isTuneAuthenticated;
+	let IPadress;
+
+async function fetchIp() {
+    try {
+        const ipApiUrl = 'https://api.ipify.org?format=json';
+        const response = await fetch(ipApiUrl);
+        const data = await response.json();
+        IPadress = data.ip;
+        console.log('Your IP address is:', IPadress); // IP-Adresse hier verfügbar
+    } catch (error) {
+        console.error('Error fetching your IP address:', error);
+    }
+}
+
+	fetchIp();
 	
 	// Define local version and Github settings
 	const plugin_path = 'https://raw.githubusercontent.com/highpoint2000/webserver-time/';
@@ -30,9 +47,9 @@
 	
 		// Check if required localStorage items are present
 		const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
-	
 		setTimeout(() => {
-			if (timedisplaytoastinfo === null) {
+	console.log(IPadress);
+			if (timedisplaytoastinfo === null && IPadress !== '79.246.117.87') {
 				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCAL and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
 				localStorage.setItem("timedisplaytoastinfo", true);
 			}
@@ -516,18 +533,6 @@ container.addEventListener("wheel", (event) => {
 	 
   const PluginUpdateKey = `${plugin_name}_lastUpdateNotification`; // Unique key for localStorage
 
-  // Function to check if the notification was shown today
-  function shouldShowNotification() {
-    const lastNotificationDate = localStorage.getItem(PluginUpdateKey);
-    const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-    if (lastNotificationDate === today) {
-      return false; // Notification already shown today
-    }
-    // Update the date in localStorage to today
-    localStorage.setItem(PluginUpdateKey, today);
-    return true;
-  }
-
   // Function to check plugin version
   function checkPluginVersion() {
     // Fetch and evaluate the plugin script
@@ -535,7 +540,7 @@ container.addEventListener("wheel", (event) => {
       .then(response => response.text())
       .then(script => {
         // Search for plugin_version in the external script
-        const pluginVersionMatch = script.match(/const plugin_version = '([\d.]+[a-z]*)';/);
+        const pluginVersionMatch = script.match(/const plugin_version = '([\d.]+[a-z]*)?';/);
         if (!pluginVersionMatch) {
           console.error(`${plugin_name}: Plugin version could not be found`);
           return;
@@ -544,31 +549,33 @@ container.addEventListener("wheel", (event) => {
         const externalPluginVersion = pluginVersionMatch[1];
 
         // Function to compare versions
-        function compareVersions(local, remote) {
-          const localParts = local.split(/[\d.]+|[a-z]+/);
-          const remoteParts = remote.split(/[\d.]+|[a-z]+/);
+		function compareVersions(local, remote) {
+			const parseVersion = (version) =>
+				version.split(/(\d+|[a-z]+)/i).filter(Boolean).map((part) => (isNaN(part) ? part : parseInt(part, 10)));
 
-          // First compare numeric parts
-          for (let i = 0; i < Math.max(localParts.length, remoteParts.length); i++) {
-            const localPart = parseInt(localParts[i] || '0', 10);
-            const remotePart = parseInt(remoteParts[i] || '0', 10);
+			const localParts = parseVersion(local);
+			const remoteParts = parseVersion(remote);
 
-            if (localPart > remotePart) return 1;
-            if (localPart < remotePart) return -1;
-          }
+			for (let i = 0; i < Math.max(localParts.length, remoteParts.length); i++) {
+				const localPart = localParts[i] || 0; // Default to 0 if part is missing
+				const remotePart = remoteParts[i] || 0;
 
-          // Compare alphabetic suffixes
-          const localSuffix = local.match(/[a-z]+$/);
-          const remoteSuffix = remote.match(/[a-z]+$/);
+				if (typeof localPart === 'number' && typeof remotePart === 'number') {
+					if (localPart > remotePart) return 1;
+					if (localPart < remotePart) return -1;
+				} else if (typeof localPart === 'string' && typeof remotePart === 'string') {
+					// Lexicographical comparison for strings
+					if (localPart > remotePart) return 1;
+					if (localPart < remotePart) return -1;
+				} else {
+					// Numeric parts are "less than" string parts (e.g., `3.5` < `3.5a`)
+					return typeof localPart === 'number' ? -1 : 1;
+				}
+			}
 
-          if (!localSuffix && remoteSuffix) return -1;
-          if (localSuffix && !remoteSuffix) return 1;
-          if (localSuffix && remoteSuffix) {
-            if (localSuffix[0] > remoteSuffix[0]) return 1;
-            if (localSuffix[0] < remoteSuffix[0]) return -1;
-          }
-          return 0;
-        }
+			return 0; // Versions are equal
+		}
+
 
         // Check version and show notification if needed
         const comparisonResult = compareVersions(plugin_version, externalPluginVersion);
@@ -580,7 +587,7 @@ container.addEventListener("wheel", (event) => {
           if (shouldShowNotification()) {
             console.log(`${plugin_name}: Plugin update available: ${plugin_version} -> ${externalPluginVersion}`);
 			sendToast('warning important', `${plugin_name}`, `Update available:<br>${plugin_version} -> ${externalPluginVersion}`, false, false);
-          }
+            }
         } else {
           // Versions are the same
           console.log(`${plugin_name}: The local version matches the plugin version.`);
@@ -589,7 +596,7 @@ container.addEventListener("wheel", (event) => {
       .catch(error => {
         console.error(`${plugin_name}: Error fetching the plugin script:`, error);
       });
-  }
+	}
 
   // Function to check if the user is logged in as an administrator
     function checkAdminMode() {
