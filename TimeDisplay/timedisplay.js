@@ -24,17 +24,17 @@
 	let isTuneAuthenticated;
 	let IPadress;
 
-async function fetchIp() {
-    try {
-        const ipApiUrl = 'https://api.ipify.org?format=json';
-        const response = await fetch(ipApiUrl);
-        const data = await response.json();
-        IPadress = data.ip;
-        console.log('Your IP address is:', IPadress); // IP-Adresse hier verfügbar
-    } catch (error) {
-        console.error('Error fetching your IP address:', error);
-    }
-}
+	async function fetchIp() {
+		try {
+			const ipApiUrl = 'https://api.ipify.org?format=json';
+			const response = await fetch(ipApiUrl);
+			const data = await response.json();
+			IPadress = data.ip;
+			// console.log('Your IP address is:', IPadress); // IP-Adresse hier verfügbar
+		} catch (error) {
+			console.error('Error fetching your IP address:', error);
+		}
+	}
 
 	fetchIp();
 	
@@ -48,7 +48,6 @@ async function fetchIp() {
 		// Check if required localStorage items are present
 		const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
 		setTimeout(() => {
-	console.log(IPadress);
 			if (timedisplaytoastinfo === null && IPadress !== '79.246.117.87') {
 				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCAL and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
 				localStorage.setItem("timedisplaytoastinfo", true);
@@ -532,6 +531,19 @@ container.addEventListener("wheel", (event) => {
     }
 	 
   const PluginUpdateKey = `${plugin_name}_lastUpdateNotification`; // Unique key for localStorage
+
+ // Function to check if the notification was shown today
+  function shouldShowNotification() {
+    const lastNotificationDate = localStorage.getItem(PluginUpdateKey);
+    const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    if (lastNotificationDate === today) {
+      return false; // Notification already shown today
+    }
+    // Update the date in localStorage to today
+    localStorage.setItem(PluginUpdateKey, today);
+    return true;
+  }
 
   // Function to check plugin version
   function checkPluginVersion() {
