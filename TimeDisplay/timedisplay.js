@@ -48,7 +48,7 @@
 		// Check if required localStorage items are present
 		const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
 		setTimeout(() => {
-			if (timedisplaytoastinfo === null && IPadress !== '79.246.117.87') {
+			if (timedisplaytoastinfo === null && IPadress !== '79.246.117.87' && IPadress !== '89.58.28.164') {
 				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCAL and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
 				localStorage.setItem("timedisplaytoastinfo", true);
 			}
