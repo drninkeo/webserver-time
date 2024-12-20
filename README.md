@@ -1,16 +1,19 @@
 # Time Display Plugin for [FM-DX-Webserver](https://github.com/NoobishSVK/fm-dx-webserver)
 
-This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
+This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server. Now with DST and manual time offset overrides.
+
+[Forked from Highpoint2000's orignal version](https://github.com/Highpoint2000/webserver-time)
 
 ![image](https://github.com/user-attachments/assets/744c81c9-4b43-4174-8981-9eda87f733bd)
 
-## Version 2.5e
-
-- Adjustments for screenshot creation
+## Version 2.6
+- Adjusted to default on the left-hand side, outside of the main wrapper.
+- Added manual time offset adjustments for when the server is ran on HTTPS.
+- Added time display option for the server time.
 
 ## Installation notes:
 
-1. [Download](https://github.com/Highpoint2000/webserver-time/releases) the last repository as a zip
+1. [Download](https://github.com/drninkeo/webserver-time/releases) the last repository as a zip
 2. Unpack all files from the plugins folder to ..fm-dx-webserver-main\plugins\ 
 3. Stop or close the fm-dx-webserver
 4. Start/Restart the fm-dx-webserver with "npm run webserver" on node.js console, check the console informations
@@ -20,11 +23,15 @@ This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
 
 ## Configuration options:
 
-The following variables can be changed in the header of the screenshot.js:
+The following variables can be changed in the header of timedisplay.js:
 
-    showTimeOnPhone = true;        		// Set to true to enable display on mobile, false to hide it 
-    showDate = true;                      	// true to show the date, false to hide it
-    updateInfo = true; 			// Enable or disable the daily plugin version check for admin
+    showTimeOnPhone = false;		// Set to true to enable display on mobile, false to hide it 
+    showDate = true;			// true to show the date, false to hide it  
+	updateInfo = true; 			// Enable or disable the daily plugin update check for admin
+	forceManualTime = true;		// Enables forcing a manually specified time offset, set below
+	manualUtcOffset = 10.0;
+	isDstPeriod = true;			// Set to true if the server is located in a DST observant region, and DST is currently in use.
+	timeStringDisplay = "AEDT"; // Server region display.
 
 ## Important notes:
 
@@ -36,6 +43,9 @@ The following variables can be changed in the header of the screenshot.js:
 - When you log in as admin, an update check occurs
 
 ## History:
+
+### Version 2.5e
+- Adjustments for screenshot creation
 
 ### Version 2.5d
 
