@@ -4,15 +4,21 @@
     ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5e)     ///
     ///                                                      ///
     ///  by Highpoint                last update: 19.11.24   ///
+    ///  Modified by ninkeon58 - 20/12/2024		     ///
     ///                                                      ///
     ///  https://github.com/Highpoint2000/webserver-time     ///
-	///                                                      ///
+    ///  https://github.com/drninkeo/webserver-time	     ///
+    ///							     ///
     ////////////////////////////////////////////////////////////
 
     // Configurable options
-    let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
+    let showTimeOnPhone = false;		// Set to true to enable display on mobile, false to hide it 
     let showDate = true;			// true to show the date, false to hide it  
-	let updateInfo = true; 			// Enable or disable the daily plugin update check for admin	
+	let updateInfo = true; 			// Enable or disable the daily plugin update check for admin
+	let forceManualTime = true;		// Enables forcing a manually specified time offset, set below
+	let manualUtcOffset = 10.0;
+	let isDstPeriod = true;			// Set to true if the server is located in a DST observant region, and DST is currently in use.
+	let timeStringDisplay = "AEDT"; // Time offset display for local region.
 
     ////////////////////////////////////////////////////////////
 
@@ -65,18 +71,28 @@
         const savedOffsetKey = `serverTimeOffset_${LAT}_${LON}`;
         const savedOffset = localStorage.getItem(savedOffsetKey);
 
-        if (savedOffset !== null) {
-            serverTimeOffset = parseFloat(savedOffset);
-            console.log("UTC Offset loaded from localStorage (hours):", serverTimeOffset);
+		if(forceManualTime == false){
+			if (savedOffset !== null) {
+				serverTimeOffset = parseFloat(savedOffset);
+				console.log("UTC Offset loaded from localStorage (hours):", serverTimeOffset);
 
-        } else {
-            fetchUtcOffset(savedOffsetKey);
-        }
+			} else {
+				fetchUtcOffset(savedOffsetKey);
+			}
+		}else{
+			if(isDstPeriod == false){
+				serverTimeOffset = parseFloat(manualUtcOffset);
+			}else{
+				serverTimeOffset = parseFloat(manualUtcOffset + 1);
+			}
+		}
     }
 
     // Fetch UTC offset from GeoNames API and save to localStorage
     function fetchUtcOffset(savedOffsetKey) {
-        if (LAT && LON) {
+		if(forceManualTime == false){
+			console.log("Attempting to fetch database time");
+			if (LAT && LON) {
             fetch(`http://api.geonames.org/timezoneJSON?lat=${LAT}&lng=${LON}&username=highpoint`)
                 .then(response => response.json())
                 .then(data => {
@@ -87,7 +103,14 @@
                     }
                 })
                 .catch(error => console.error("Error fetching the UTC Offset:", error));
-        }
+			}	
+		}else{
+			if(isDstPeriod == false){
+				serverTimeOffset = parseFloat(manualUtcOffset);
+			}else{
+				serverTimeOffset = parseFloat(manualUtcOffset + 1);
+			}
+		}
     }
 
     function initializeTimeDisplay() {
@@ -120,6 +143,10 @@
 			const serverTime = new Date(utcNow.getTime() + serverTimeOffset * 60 * 60 * 1000); // Wendet den Offset in Millisekunden an
 			return serverTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 		};
+		
+		const getTimeDisplayString = () => {
+			return timeStringDisplay;
+		}
 
         const getCurrentServerDate = () => {
             const nowUTC = new Date(); // Current UTC time
@@ -132,13 +159,14 @@
         container.id = "time-toggle-container";
         container.style.position = "relative";
         container.style.cursor = "pointer";
+		container.style.height = "100%";
         container.title = `Plugin Version: ${plugin_version}`;
         
         if (!window.location.href.includes("setup")) {
             container.style.zIndex = "1";
         }
 
-        const wrapperElement = document.getElementById("wrapper");
+        const wrapperElement = document.getElementById("wrapper-outer");
         if (wrapperElement) {
             wrapperElement.prepend(container);
         } else {
@@ -154,11 +182,11 @@
 					if (window.innerHeight <= 860) {
 						container.style.left = "0px";		
 					} else {
-						container.style.left = "-450px";
+						container.style.left = "-75px";
 					}
 				} else {
 					if (window.innerHeight <= 860) {
-						container.style.left = "-450px";		
+						container.style.left = "-4px";		
 					} else {
 						container.style.left = "0px";
 					}
@@ -311,15 +339,15 @@ container.addEventListener("wheel", (event) => {
             updateFontSizes();
         };
 		
-        const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="local-date">${getCurrentLocalDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
-		const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="world-date">${getCurrentWorldDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
-        const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px;" id="server-date">${getCurrentServerDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
+        const localDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px; padding-bottom: 20px;" id="local-date">${getCurrentLocalDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
+		const WorldDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px; padding-bottom: 20px;" id="world-date">${getCurrentWorldDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
+        const serverDateHtml = showDate ? `<div class="${phoneDisplayClass} date-display" style="margin-top: -10px; font-size: ${fontSizeTime / 6}px; padding-bottom: 20px;" id="server-date">${getCurrentServerDate()}</div>` : '<div style="min-width: 100px; display:inline-block;"></div>';
 
         const WorldLocalContainerHtml = () => {
             
             if (timeDisplayInline) {
                 return `
-                    <div id="time-content" style="display: flex; align-items: center; justify-content: center;">
+                    <div id="time-content" style="display: block; align-items: center; justify-content: center;">
                         <div id="utc-container" style="text-align: center; margin-right: 20px;">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="utc-label">WORLD TIME</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-world-time">${getCurrentUTCTime()}</div>
@@ -353,14 +381,14 @@ container.addEventListener("wheel", (event) => {
 			
 			if (timeDisplayInline) {
                 return `
-                    <div id="time-content" style="display: flex; align-items: center; justify-content: center;">
+                    <div id="time-content" style="display: block; align-items: center; justify-content: center;">
                         <div id="utc-container" style="text-align: center; margin-right: 20px;">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="utc-label">WORLD TIME</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-world-time">${getCurrentUTCTime()}</div>
                             ${WorldDateHtml}
                         </div>
                         <div id="server-container" style="text-align: center; margin-right: 20px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -374,7 +402,7 @@ container.addEventListener("wheel", (event) => {
                             ${WorldDateHtml}
                         </div>
                         <div id="server-container" style="margin-top: 30px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -387,14 +415,14 @@ container.addEventListener("wheel", (event) => {
 			
 		if (timeDisplayInline) {
             return `
-                    <div id="time-content" style="display: flex; align-items: center; justify-content: center;">
+                    <div id="time-content" style="display: block; align-items: center; justify-content: center;">
                         <div id="local-container" style="text-align: center; margin-right: 20px;">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="local-label">LOCAL TIME</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-local-time">${getCurrentTime()}</div>
                             ${localDateHtml}
                         </div>
                         <div id="server-container" style="text-align: center; margin-right: 20px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -408,7 +436,7 @@ container.addEventListener("wheel", (event) => {
                             ${localDateHtml}
                         </div>
                         <div id="server-container" style="margin-top: 30px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -421,14 +449,14 @@ container.addEventListener("wheel", (event) => {
 			
 			if (timeDisplayInline) {
                 return `
-                    <div id="time-content" style="display: flex; align-items: center; justify-content: center;">
+                    <div id="time-content" style="display: block; align-items: center; justify-content: center;">
                         <div id="local-container" style="text-align: center; margin-right: 20px;">
                             <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="local-label">LOCAL TIME</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-local-time">${getCurrentTime()}</div>
                             ${localDateHtml}
                         </div>
                         <div id="server-container" style="text-align: center; margin-right: 20px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -447,7 +475,7 @@ container.addEventListener("wheel", (event) => {
                             ${localDateHtml}
                         </div>
                         <div id="server-container" style="margin-top: 30px;">
-                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME</h2>
+                            <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px;" id="server-label">SERVER TIME (${getTimeDisplayString()})</h2>
                             <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                             ${serverDateHtml}
                         </div>
@@ -482,7 +510,7 @@ container.addEventListener("wheel", (event) => {
         const ServerTimeContainerHtml = () => {
             return `
                 <div id="time-content" style="text-align: center;">
-                    <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px; text-align: center;" id="single-label" class="mb-0">SERVER TIME</h2>
+                    <h2 class="${phoneDisplayClass}" style="margin: -10px; font-size: ${fontSizeTime / 2}px; text-align: center;" id="single-label" class="mb-0">SERVER TIME (${getTimeDisplayString()})</h2>
                     <div class="${phoneDisplayClass} text" style="margin: -10px; font-size: ${fontSizeTime}px;" id="current-server-time">${getServerTime()}</div>
                     ${serverDateHtml}
                 </div>`;
