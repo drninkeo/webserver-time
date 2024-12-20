@@ -1,8 +1,8 @@
 // Plugin configuration, this is used in the administration when plugins are loaded
 var pluginConfig = {
-    name: 'Time Display Plugin',
-    version: '2.5e',
-    author: 'Highpoint',
+    name: 'Time Display Plugin Extended',
+    version: '2.6',
+    author: 'Highpoint / ninkeon58',
     frontEndPath: 'TimeDisplay/timedisplay.js'
 }
 
