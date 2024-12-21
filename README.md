@@ -4,13 +4,12 @@ This plugin provides a time display (UTC/LOCAL/SERVER) for the FM-DX web server.
 
 [Forked from Highpoint2000's orignal version](https://github.com/Highpoint2000/webserver-time)
 
-![image](https://github.com/user-attachments/assets/744c81c9-4b43-4174-8981-9eda87f733bd)
+![image](https://github.com/user-attachments/assets/4a694417-5e76-490b-aaf7-26792de6d9d7)
 
-## Version 2.6
-- Adjusted to default on the left-hand side, outside of the main wrapper.
-- Added manual time offset adjustments for when the server is ran on HTTPS.
-- Added time display option for the server time.
 
+## Version 2.6a
+- Fixed a bug where if the client is located in a day in the future (eg. Tuesday) and the server is behind (eg. Monday), then both times are displayed wrong.
+- Added a check for detecting mobile mode, and not adding the container at all if time is not to be shown on mobile (showTimeOnPhone is set to false)
 ## Installation notes:
 
 1. [Download](https://github.com/drninkeo/webserver-time/releases) the last repository as a zip
@@ -33,16 +32,20 @@ The following variables can be changed in the header of timedisplay.js:
 	isDstPeriod = true;			// Set to true if the server is located in a DST observant region, and DST is currently in use.
 	timeStringDisplay = "AEDT"; // Server region display.
 
-## Important notes:
-
-- Move the time display to an individual position using drag and drop (mouse button on time display!)
-- Click on the time display to switch between UTC, local time and server time and the different display options
-- The size of the time display can be changed variably using the scroll wheel
-- Switching the arrangement (vertical or horizontal) is done by holding down the time display (2.5 seconds!)
-- A switch in the script header can be used to turn the time display on mobile devices and the date on and off
-- When you log in as admin, an update check occurs
+> [!TIP]
+> - Move the time display to an individual position using drag and drop (mouse button on time display!) <br><br>
+> - Click on the time display to switch between UTC, local time and server time and the different display options <br><br>
+> - The size of the time display can be changed variably using the scroll wheel <br><br>
+> - Switching the arrangement (vertical or horizontal) is done by holding down the time display (2.5 seconds!) <br><br>
+> - A switch in the script header can be used to turn the time display on mobile devices and the date on and off <br><br>
+> - When you log in as admin, an update check occurs <br><br>
 
 ## History:
+
+## Version 2.6
+- Adjusted to default on the left-hand side, outside of the main wrapper.
+- Added manual time offset adjustments for when the server is ran on HTTPS.
+- Added time display option for the server time.
 
 ### Version 2.5e
 - Adjustments for screenshot creation
