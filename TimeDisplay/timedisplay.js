@@ -1,18 +1,18 @@
 (() => {
     ////////////////////////////////////////////////////////////
     ///                                                      ///
-    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.5e)     ///
+    ///  TIME DISPLAY SCRIPT FOR FM-DX-WEBSERVER (V2.6a)     ///
     ///                                                      ///
     ///  by Highpoint                last update: 19.11.24   ///
-    ///  Modified by ninkeon58 - 20/12/2024		     ///
+	///  Modified by ninkeon58 - 21/12/2024					 ///
     ///                                                      ///
     ///  https://github.com/Highpoint2000/webserver-time     ///
-    ///  https://github.com/drninkeo/webserver-time	     ///
-    ///							     ///
+	///  https://github.com/drninkeo/webserver-time			 ///
+	///														 ///
     ////////////////////////////////////////////////////////////
 
     // Configurable options
-    let showTimeOnPhone = false;		// Set to true to enable display on mobile, false to hide it 
+    let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
     let showDate = true;			// true to show the date, false to hide it  
 	let updateInfo = true; 			// Enable or disable the daily plugin update check for admin
 	let forceManualTime = true;		// Enables forcing a manually specified time offset, set below
@@ -22,8 +22,9 @@
 
     ////////////////////////////////////////////////////////////
 
-    const plugin_version = '2.5e';
+    const plugin_version = '2.6a';
 	const ipApiUrl = 'https://api.ipify.org?format=json';
+	const corsAnywhereUrl = 'https://cors-proxy.de:13128/';													
 	
     let initialDisplayState = '0';
     let timeDisplayInline = JSON.parse(localStorage.getItem("timeDisplayInline")) ?? true;
@@ -54,7 +55,7 @@
 		// Check if required localStorage items are present
 		const timedisplaytoastinfo = localStorage.getItem("timedisplaytoastinfo");
 		setTimeout(() => {
-			if (timedisplaytoastinfo === null && IPadress !== '79.246.117.87' && IPadress !== '89.58.28.164') {
+			if (timedisplaytoastinfo === null && IPadress !== '89.58.28.164') {
 				sendToast('info important', 'Time Display', `Use drag & drop to move the time display to the desired position, change the time selection (UTC, LOCAL and/or WORLD TIME) by briefly clicking on it, hold down the display to change the design (horizontal or vertical) and use the mouse wheel to change the time display to adjust the correct size..`, true, false);
 				localStorage.setItem("timedisplaytoastinfo", true);
 			}
@@ -93,7 +94,7 @@
 		if(forceManualTime == false){
 			console.log("Attempting to fetch database time");
 			if (LAT && LON) {
-            fetch(`http://api.geonames.org/timezoneJSON?lat=${LAT}&lng=${LON}&username=highpoint`)
+				fetch(`${corsAnywhereUrl}http://api.geonames.org/timezoneJSON?lat=${LAT}&lng=${LON}&username=highpoint`)
                 .then(response => response.json())
                 .then(data => {
                     if (data) {
@@ -113,6 +114,18 @@
 		}
     }
 
+	function adjustForTimezone(dtInput){
+		var targetTime = new Date(dtInput);
+		var timeZoneFromDB = serverTimeOffset; //time zone value from our server declared value
+		
+		//get the timezone offset from local time in minutes
+		var tzDifference = timeZoneFromDB * 60 + targetTime.getTimezoneOffset();
+		
+		//convert the offset to milliseconds, add to targetTime, and make a new Date
+		var offsetTime = new Date(targetTime.getTime() + tzDifference * 60 * 1000);
+		return offsetTime;
+	}
+	
     function initializeTimeDisplay() {
         const phoneDisplayClass = showTimeOnPhone ? 'show-phone' : 'hide-phone';
         let displayState = localStorage.getItem('displayState');
@@ -127,6 +140,7 @@
         const getCurrentTime = () => new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         const getCurrentUTCTime = () => new Date().toUTCString().split(' ')[4];
         const getCurrentLocalDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+
         
         const getCurrentWorldDate = () => {
             const now = new Date();
@@ -149,26 +163,49 @@
 		}
 
         const getCurrentServerDate = () => {
-            const nowUTC = new Date(); // Current UTC time
-            const serverDate = new Date(nowUTC.getTime() - serverTimeOffset * 60 * 60 * 1000); // Apply offset in milliseconds
-
+			// First get the time in UTC
+			var date = new Date();
+            const nowUTC = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
+                date.getUTCDate(), date.getUTCHours(),
+                date.getUTCMinutes(), date.getUTCSeconds());
+				
+			// Get the adjusted timezone as the server may be in a different day (eg, Tuesday while the client is still in Monday)
+            const serverDate = new Date(adjustForTimezone(nowUTC));
+			
             return serverDate.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
         };
-
+		
         const container = document.createElement("div");
         container.id = "time-toggle-container";
         container.style.position = "relative";
         container.style.cursor = "pointer";
-		container.style.height = "100%";
         container.title = `Plugin Version: ${plugin_version}`;
         
         if (!window.location.href.includes("setup")) {
             container.style.zIndex = "1";
         }
+		
+		var isPhoneDontAdd;
 
-        const wrapperElement = document.getElementById("wrapper-outer");
+        var wrapperElement = document.getElementById("wrapper-outer");
+		if (window.innerWidth < 1500) {
+			wrapperElement = document.getElementById("wrapper");
+			if(showTimeOnPhone == false){
+				isPhoneDontAdd = true;
+			}
+		}else{
+			container.style.height = "100%";
+			container.style.top = "115px";	
+		}
+		
         if (wrapperElement) {
-            wrapperElement.prepend(container);
+			if (window.innerWidth > 768) {
+				wrapperElement.prepend(container);
+			}else{
+				if(isPhoneDontAdd == false){
+					wrapperElement.prepend(container);
+				}
+			}
         } else {
             console.error("Element with id #wrapper not found.");
         }
@@ -190,8 +227,7 @@
 					} else {
 						container.style.left = "0px";
 					}
-				}
-				container.style.top = "115px";			
+				}		
                 container.style.width = "auto";
             } else {
                 container.style.left = `${savedPosition.x}px`;
