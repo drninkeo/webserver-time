@@ -12,7 +12,7 @@
     ////////////////////////////////////////////////////////////
 
     // Configurable options
-    let showTimeOnPhone = true;		// Set to true to enable display on mobile, false to hide it 
+    let showTimeOnPhone = false;		// Set to true to enable display on mobile, false to hide it 
     let showDate = true;			// true to show the date, false to hide it  
 	let updateInfo = true; 			// Enable or disable the daily plugin update check for admin
 	let forceManualTime = true;		// Enables forcing a manually specified time offset, set below
@@ -192,6 +192,8 @@
 			wrapperElement = document.getElementById("wrapper");
 			if(showTimeOnPhone == false){
 				isPhoneDontAdd = true;
+			}else{
+				isPhoneDontAdd = false;
 			}
 		}else{
 			container.style.height = "100%";
